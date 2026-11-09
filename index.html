@@ -456,6 +456,7 @@ const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
 
 const ADMIN_EMAIL = "fabrifigueroar@gmail.com";
+const CLIENT_EMAIL = "frieramultirubros@gmail.com";
 let currentUser = null;
 const hoy = new Date();
 
@@ -705,7 +706,7 @@ function accionesHTML(tipo, i){
   let html = '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
   
   // Ocultar botón de eliminar si NO es el administrador
-  if (currentUser && currentUser.email === ADMIN_EMAIL) {
+  if (currentUser && (currentUser.email === ADMIN_EMAIL || currentUser.email === CLIENT_EMAIL)) {
     html += '<button type="button" class="icon-btn danger" onclick="deleteItem(\'' + tipo + '\', ' + i + ')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
   }
   return html;
@@ -841,8 +842,8 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
 
 function editItem(tipo, index){ openModal(tipo, index); }
 async function deleteItem(tipo, index){
-  if (currentUser && currentUser.email !== ADMIN_EMAIL) {
-    alert('Acceso denegado: Solo el administrador puede eliminar registros.');
+  if (!currentUser || (currentUser.email !== ADMIN_EMAIL && currentUser.email !== CLIENT_EMAIL)) {
+    alert('Acceso denegado: No tenés permisos para eliminar registros.');
     return;
   }
   const cfg = entidades[tipo];
