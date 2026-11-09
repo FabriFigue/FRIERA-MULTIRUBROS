@@ -70,11 +70,9 @@
     text-align:center;
   }
   .login-logo-container {
-    background: #fff; padding: 12px; border-radius: 8px;
-    border: 1px solid var(--border); display: inline-block; margin-bottom: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    display: flex; justify-content: center; margin-bottom: 24px;
   }
-  .login-logo-container img { max-width: 140px; height: auto; display: block; }
+  .login-logo-container img { max-width: 240px; width: 100%; height: auto; display: block; }
   .login-title{font-size:20px;font-weight:700;margin-bottom:6px;}
   .login-sub{font-size:14px;color:var(--ink-soft);margin-bottom:32px;}
   
@@ -120,8 +118,7 @@
     padding:0 4px 28px 4px; border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:24px;
   }
   .brand img {
-    max-width: 140px; height: auto; border-radius: 6px; display: block;
-    background: #fff; padding: 8px 12px;
+    width: 100%; max-width: 200px; height: auto; display: block; margin: 0 auto;
   }
   .brand-sub{font-size:12px;font-weight:500; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.4);}
 
@@ -843,7 +840,7 @@ function renderAllViews(){
 }
 
 // Navegación
-const titles = {dashboard:'Inicio', ideas:'Semillero de Ideas', clientes:'Clientes de Herfasa S.A', stock:'Stock', ventas:'Ventas'};
+const titles = {dashboard:'Inicio', ideas:'Semillero de Ideas', clientes:'Clientes', stock:'Stock', ventas:'Ventas'};
 let currentView = 'dashboard';
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.addEventListener('click', ()=>{
