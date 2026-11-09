@@ -491,6 +491,26 @@
         </div>
       </div>
 
+      <!-- EQUIPOS DEL CLIENTE (SUB-VISTA) -->
+      <div class="view" id="view-equipos">
+        <div class="toolbar" style="border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 24px;">
+          <button class="btn ghost" onclick="cerrarEquipos()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Volver a Clientes
+          </button>
+          <h2 id="equipos-cliente-nombre" style="margin-left: 16px; font-size: 18px;">Equipos del Cliente</h2>
+          <div style="margin-left: auto;">
+            <button class="btn" onclick="openModal('equipos')">+ Agregar Equipo</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nº Chapa</th><th>Agente / Tipo</th><th style="text-align:right">Capacidad</th><th style="text-align:right">Venc. Carga</th><th style="text-align:right">Venc. P.H.</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
+            <tbody id="equipos-body"></tbody>
+          </table>
+        </div>
+      </div>
+
       <!-- VENTAS -->
       <div class="view" id="view-ventas">
         <div class="toolbar"><input class="search" id="search-ventas" placeholder="Buscar por venta, detalle o cliente..."></div>
@@ -631,17 +651,31 @@ function fmtMoneda(n){
   return '$' + (Number(n)||0).toLocaleString('es-AR');
 }
 
-let ideas = [], clientes = [], stock = [], ventas = [];
+let ideas = [], clientes = [], stock = [], ventas = [], equipos = [];
 let isCloudOnline = false;
+let currentClienteId = null;
 
 const entidades = {
   clientes: {
     titulo:'cliente', get array(){ return clientes; }, set array(v){ clientes = v; }, view:'clientes', renderFn: ()=>renderClientes(),
     campos:[
       {key:'nombre', label:'Nombre / Razón social', type:'text'},
+      {key:'telefono', label:'Teléfono WhatsApp (ej: 549342...)', type:'text'},
       {key:'direccion', label:'Dirección', type:'text'},
-      {key:'matafuegos', label:'Matafuegos instalados', type:'number'},
-      {key:'vencimiento', label:'Próximo vencimiento', type:'date'},
+      {key:'matafuegos', label:'Matafuegos (Cantidad histórica)', type:'number'},
+      {key:'vencimiento', label:'Próximo vencimiento (General)', type:'date'},
+    ]
+  },
+  equipos: {
+    titulo:'equipo', get array(){ return equipos; }, set array(v){ equipos = v; }, view:'equipos', renderFn: ()=>renderEquipos(),
+    campos:[
+      {key:'num_chapa', label:'Nº de Chapa / Identificación', type:'text'},
+      {key:'tipo', label:'Agente / Tipo', type:'select', options:[
+        {val:'Polvo ABC', label:'Polvo ABC'}, {val:'CO2', label:'CO2'}, {val:'Agua', label:'Agua'}, {val:'Espuma', label:'Espuma AFFF'}, {val:'Haloceno', label:'Haloceno'}
+      ]},
+      {key:'capacidad', label:'Capacidad (kg/L)', type:'number'},
+      {key:'vencimiento_carga', label:'Vencimiento de Recarga', type:'date'},
+      {key:'vencimiento_ph', label:'Vencimiento de Prueba Hidráulica (PH)', type:'date'},
     ]
   },
   stock: {
@@ -679,7 +713,6 @@ const entidades = {
   }
 };
 
-// Funciones principales de la App (se ejecutan al loguearse)
 async function iniciarAppCompleta() {
   document.getElementById('topbar-date').textContent = hoy.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   await syncFromSupabase();
@@ -689,17 +722,19 @@ async function iniciarAppCompleta() {
 async function syncFromSupabase() {
   if (!supabaseClient) return;
   try {
-    const resIdeas = await supabaseClient.from('ideas').select('*').order('created_at', { ascending: false });
-    if (!resIdeas.error && resIdeas.data) ideas = resIdeas.data;
+    const [resIdeas, resClientes, resStock, resVentas, resEquipos] = await Promise.all([
+      supabaseClient.from('ideas').select('*').order('created_at', { ascending: false }),
+      supabaseClient.from('clientes').select('*'),
+      supabaseClient.from('stock').select('*'),
+      supabaseClient.from('ventas').select('*').order('fecha', { ascending: false }),
+      supabaseClient.from('equipos').select('*')
+    ]);
 
-    const resClientes = await supabaseClient.from('clientes').select('*');
-    if (!resClientes.error && resClientes.data) clientes = resClientes.data;
-
-    const resStock = await supabaseClient.from('stock').select('*');
-    if (!resStock.error && resStock.data) stock = resStock.data;
-
-    const resVentas = await supabaseClient.from('ventas').select('*');
-    if (!resVentas.error && resVentas.data) ventas = resVentas.data;
+    if (resIdeas.data) ideas = resIdeas.data;
+    if (resClientes.data) clientes = resClientes.data;
+    if (resStock.data) stock = resStock.data;
+    if (resVentas.data) ventas = resVentas.data;
+    if (resEquipos.data) equipos = resEquipos.data;
 
     isCloudOnline = true;
   } catch (err) {
@@ -721,7 +756,6 @@ function updateSyncIndicator() {
   }
 }
 
-// Renderizado de vistas
 function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
 
 function renderDashboard(){
@@ -751,7 +785,7 @@ function renderDashboard(){
     needle.setAttribute('y2', (90 - 52*Math.sin(rad)).toFixed(1));
     pctEl.textContent = Math.round(pct*e) + '%';
   }
-  frame(1); // sin animacion por limpieza de codigo base
+  frame(1);
 
   const stateEl = document.getElementById('gauge-state');
   if(pct >= 70){ stateEl.textContent = 'Mayoría al día'; stateEl.className = 'gauge-state good'; }
@@ -762,50 +796,98 @@ function renderDashboard(){
   document.getElementById('venc-list').innerHTML = ordenados.slice(0,5).map(c=>{
     const d = diasDesdeHoy(c.vencimiento);
     const est = estadoVenc(d);
-    return '<div class="venc-row ' + est + '">' +
-      '<div class="cliente">' + c.nombre + '</div>' +
-      '<div class="detalle">' + c.matafuegos + ' extintores · ' + (c.direccion||'') + '</div>' +
-      '<div class="fecha">' + fmtFecha(c.vencimiento) + '</div>' +
-    '</div>';
+    return '<div class="venc-row ' + est + '"><div class="cliente">' + c.nombre + '</div><div class="detalle">' + c.matafuegos + ' extintores · ' + (c.direccion||'') + '</div><div class="fecha">' + fmtFecha(c.vencimiento) + '</div></div>';
   }).join('');
 
   const criticos = stock.filter(s=>s.cant < s.min);
   document.getElementById('stock-critico-body').innerHTML = criticos.length ? criticos.map(s=>
-    '<tr><td>' + s.producto + '</td><td><span class="tag">' + s.tipo + '</span></td>' +
-    '<td class="num" style="color:var(--red);font-weight:bold;">' + s.cant + '</td><td class="num">' + s.min + '</td></tr>'
+    '<tr><td>' + s.producto + '</td><td><span class="tag">' + s.tipo + '</span></td><td class="num" style="color:var(--danger);font-weight:bold;">' + s.cant + '</td><td class="num">' + s.min + '</td></tr>'
   ).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--ink-soft);">Sin alertas de stock</td></tr>';
 }
 
 function accionesHTML(tipo, i){
-  let html = '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
-  
-  // Ocultar botón de eliminar si NO es el administrador
+  let html = '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
   if (currentUser && (currentUser.email === ADMIN_EMAIL || currentUser.email === CLIENT_EMAIL)) {
-    html += '<button type="button" class="icon-btn danger" onclick="deleteItem(\'' + tipo + '\', ' + i + ')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
+    html += '<button type="button" class="icon-btn danger" onclick="deleteItem(\'' + tipo + '\', ' + i + ')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
   }
   return html;
+}
+
+function avisarWA(clienteId) {
+  const c = clientes.find(x => x.id === clienteId);
+  if(!c || !c.telefono) return alert("Este cliente no tiene teléfono configurado.");
+  const msg = `Hola ${c.nombre}, nos comunicamos desde Friera Multi-Rubros. Queríamos avisarte sobre el vencimiento de tus equipos.`;
+  window.open(`https://wa.me/${c.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function verEquipos(clienteId) {
+  currentClienteId = clienteId;
+  const c = clientes.find(x => x.id === clienteId);
+  document.getElementById('equipos-cliente-nombre').textContent = 'Equipos de ' + c.nombre;
+  
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.getElementById('view-equipos').classList.add('active');
+  renderEquipos();
+}
+function cerrarEquipos() {
+  currentClienteId = null;
+  document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+  document.getElementById('view-clientes').classList.add('active');
+}
+
+function renderEquipos() {
+  if(!currentClienteId) return;
+  const eq = equipos.filter(e => e.cliente_id === currentClienteId);
+  document.getElementById('equipos-body').innerHTML = eq.length ? eq.map(e => {
+    const est = estadoVenc(diasDesdeHoy(e.vencimiento_carga));
+    const label = est==='vencido' ? 'Vencido' : est==='proximo' ? 'Próximo' : 'Al día';
+    return `<tr>
+      <td><b>${e.num_chapa || '-'}</b></td>
+      <td><span class="tag">${e.tipo}</span></td>
+      <td class="num">${e.capacidad} kg</td>
+      <td class="num">${fmtFecha(e.vencimiento_carga)}</td>
+      <td class="num" style="color:var(--ink-soft)">${fmtFecha(e.vencimiento_ph)}</td>
+      <td style="text-align:center"><span class="pill ${est}">${label}</span></td>
+      <td><div class="row-actions">${accionesHTML('equipos', equipos.indexOf(e))}</div></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--ink-soft);">No hay equipos cargados para este cliente.</td></tr>';
 }
 
 function renderClientes(filtro=''){
   const f = filtro.toLowerCase();
   document.getElementById('clientes-body').innerHTML = clientes.filter(c=>c.nombre.toLowerCase().includes(f)).map(c=>{
+    // Calc real quantity from equipos, fallback to legacy
+    const eq = equipos.filter(e => e.cliente_id === c.id);
+    const cantReal = eq.length > 0 ? eq.length : (c.matafuegos || 0);
+
     const est = estadoVenc(diasDesdeHoy(c.vencimiento));
     const label = est==='vencido' ? 'Vencido' : est==='proximo' ? 'Próximo' : 'Al día';
-    return '<tr><td><b>' + c.nombre + '</b></td><td style="color:var(--ink-soft)">' + (c.direccion||'-') + '</td><td class="num">' + c.matafuegos + '</td><td class="num">' + fmtFecha(c.vencimiento) + '</td><td><span class="pill ' + est + '">' + label + '</span></td><td><div class="row-actions">' + accionesHTML('clientes', clientes.indexOf(c)) + '</div></td></tr>';
+    
+    let waBtn = c.telefono ? `<button type="button" class="icon-btn" onclick="avisarWA(${c.id})" title="Avisar por WhatsApp" style="color: #16a34a; border-color: #16a34a;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>` : '';
+    let eqBtn = `<button type="button" class="icon-btn" onclick="verEquipos(${c.id})" title="Gestionar Equipos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13h4"/><path d="M10 17h4"/><path d="M14 9H8"/></svg></button>`;
+
+    return `<tr>
+      <td><b>${c.nombre}</b><br><span style="font-size:11px;color:var(--ink-soft)">${c.telefono||'Sin teléfono'}</span></td>
+      <td style="color:var(--ink-soft)">${c.direccion||'-'}</td>
+      <td class="num">${cantReal}</td>
+      <td class="num">${fmtFecha(c.vencimiento)}</td>
+      <td style="text-align:center"><span class="pill ${est}">${label}</span></td>
+      <td><div class="row-actions">${waBtn}${eqBtn}${accionesHTML('clientes', clientes.indexOf(c))}</div></td>
+    </tr>`;
   }).join('');
 }
 
 function renderStock(filtro=''){
   const f = filtro.toLowerCase();
   document.getElementById('stock-body').innerHTML = stock.filter(s=>s.producto.toLowerCase().includes(f)).map(s=>{
-    return '<tr><td><b>' + s.producto + '</b></td><td><span class="tag">' + s.tipo + '</span></td><td class="num">' + (s.capacidad||'-') + '</td><td class="num ' + (s.cant<s.min?'stock-low':'') + '">' + s.cant + '</td><td class="num">' + fmtMoneda(s.precio) + '</td><td><div class="row-actions">' + accionesHTML('stock', stock.indexOf(s)) + '</div></td></tr>';
+    return `<tr><td><b>${s.producto}</b></td><td><span class="tag">${s.tipo}</span></td><td class="num">${s.capacidad||'-'}</td><td class="num ${s.cant<s.min?'stock-low':''}">${s.cant}</td><td class="num">${fmtMoneda(s.precio)}</td><td><div class="row-actions">${accionesHTML('stock', stock.indexOf(s))}</div></td></tr>`;
   }).join('');
 }
 
 function renderVentas(filtro=''){
   const f = filtro.toLowerCase();
   document.getElementById('ventas-body').innerHTML = ventas.filter(v=>v.cliente.toLowerCase().includes(f)).map(v=>{
-    return '<tr><td>' + fmtFecha(v.fecha) + '</td><td><b>' + v.cliente + '</b></td><td style="color:var(--ink-soft)">' + (v.detalle||'-') + '</td><td class="num">' + fmtMoneda(v.total) + '</td><td><div class="row-actions">' + accionesHTML('ventas', ventas.indexOf(v)) + '</div></td></tr>';
+    return `<tr><td>${fmtFecha(v.fecha)}</td><td><b>${v.cliente}</b></td><td style="color:var(--ink-soft)">${v.detalle||'-'}</td><td class="num">${fmtMoneda(v.total)}</td><td><div class="row-actions">${accionesHTML('ventas', ventas.indexOf(v))}</div></td></tr>`;
   }).join('');
 }
 
@@ -818,21 +900,20 @@ function renderIdeas(filtro=''){
   grid.innerHTML = arr.map(it=>{
     const idx = ideas.indexOf(it);
     const catClass = it.categoria || 'general';
-    return '<div class="seed-card">' +
-      '<div class="seed-card-head"><span class="seed-badge ' + catClass + '">' + catClass + '</span>' +
-      '<div class="row-actions">' + accionesHTML('ideas', idx) + '</div></div>' +
-      '<div class="seed-title">' + (it.titulo || '') + '</div>' +
-      '<div class="seed-text">' + (it.texto || '') + '</div>' +
-      '<div class="seed-meta"><span>Por ' + (it.autor||'Usuario') + '</span>' + 
-      '<button type="button" class="seed-status ' + (it.estado||'pendiente') + '" ' + (currentUser && currentUser.email === ADMIN_EMAIL ? 'onclick="cambiarEstadoIdea(' + idx + ',\'' + (it.estado === 'pendiente' ? 'en-proceso' : it.estado === 'en-proceso' ? 'listo' : 'pendiente') + '\')" title="Cambiar estado"' : 'style="cursor:default;"') + '>' + (it.estado||'pendiente').toUpperCase() + '</button>' +
-      '</div></div>';
+    return `<div class="seed-card">
+      <div class="seed-card-head"><span class="seed-badge ${catClass}">${catClass}</span>
+      <div class="row-actions">${accionesHTML('ideas', idx)}</div></div>
+      <div class="seed-title">${it.titulo || ''}</div>
+      <div class="seed-text">${it.texto || ''}</div>
+      <div class="seed-meta"><span>Por ${it.autor||'Usuario'}</span>
+      <button type="button" class="seed-status ${it.estado||'pendiente'}" ${(currentUser && currentUser.email === ADMIN_EMAIL) ? `onclick="cambiarEstadoIdea(${idx},'${it.estado === 'pendiente' ? 'en-proceso' : it.estado === 'en-proceso' ? 'listo' : 'pendiente'}')"` : 'style="cursor:default;"'}>${(it.estado||'pendiente').toUpperCase()}</button>
+      </div></div>`;
   }).join('');
 }
 
 async function cambiarEstadoIdea(index, nuevoEstado){
   if (currentUser && currentUser.email !== ADMIN_EMAIL) {
-    alert('Solo el administrador puede cambiar el estado de las ideas.');
-    return;
+    alert('Solo el administrador puede cambiar el estado de las ideas.'); return;
   }
   ideas[index].estado = nuevoEstado;
   const idea = ideas[index];
@@ -841,7 +922,7 @@ async function cambiarEstadoIdea(index, nuevoEstado){
 }
 
 function renderAllViews(){
-  renderDashboard(); renderIdeas(); renderClientes(); renderStock(); renderVentas();
+  renderDashboard(); renderIdeas(); renderClientes(); renderStock(); renderVentas(); if(currentClienteId) renderEquipos();
 }
 
 // Navegación
@@ -892,6 +973,9 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
   });
   if(modalTipo === 'ideas' && modalIndex === null){
     nuevo.estado = 'pendiente'; nuevo.autor = currentUser ? currentUser.email.split('@')[0] : 'Usuario';
+  }
+  if(modalTipo === 'equipos') {
+    nuevo.cliente_id = currentClienteId;
   }
   let dbId = null;
   if(modalIndex !== null){
