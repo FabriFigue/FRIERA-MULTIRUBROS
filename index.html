@@ -500,7 +500,12 @@ loginForm.addEventListener('submit', async (e) => {
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   
   if (error) {
-    loginError.textContent = "Correo o contraseña incorrectos.";
+    console.error("Supabase Login Error:", error);
+    if (error.message.includes("Email not confirmed")) {
+      loginError.textContent = "Error: Falta confirmar el correo. Apagá 'Confirm email' en Supabase.";
+    } else {
+      loginError.textContent = "Correo o contraseña incorrectos.";
+    }
     loginError.style.display = 'block';
     loginText.style.display = 'block';
     loginLoader.style.display = 'none';
