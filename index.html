@@ -705,7 +705,7 @@ function accionesHTML(tipo, i){
   let html = '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
   
   // Ocultar botón de eliminar si NO es el administrador
-  if (currentUser && currentUser.email === 'prof.edfisica.figueroa@gmail.com') {
+  if (currentUser && currentUser.email === ADMIN_EMAIL) {
     html += '<button type="button" class="icon-btn danger" onclick="deleteItem(\'' + tipo + '\', ' + i + ')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
   }
   return html;
@@ -749,13 +749,13 @@ function renderIdeas(filtro=''){
       '<div class="seed-title">' + (it.titulo || '') + '</div>' +
       '<div class="seed-text">' + (it.texto || '') + '</div>' +
       '<div class="seed-meta"><span>Por ' + (it.autor||'Usuario') + '</span>' + 
-      '<button type="button" class="seed-status ' + (it.estado||'pendiente') + '" ' + (currentUser && currentUser.email === 'prof.edfisica.figueroa@gmail.com' ? 'onclick="cambiarEstadoIdea(' + idx + ',\'' + (it.estado === 'pendiente' ? 'en-proceso' : it.estado === 'en-proceso' ? 'listo' : 'pendiente') + '\')" title="Cambiar estado"' : 'style="cursor:default;"') + '>' + (it.estado||'pendiente').toUpperCase() + '</button>' +
+      '<button type="button" class="seed-status ' + (it.estado||'pendiente') + '" ' + (currentUser && currentUser.email === ADMIN_EMAIL ? 'onclick="cambiarEstadoIdea(' + idx + ',\'' + (it.estado === 'pendiente' ? 'en-proceso' : it.estado === 'en-proceso' ? 'listo' : 'pendiente') + '\')" title="Cambiar estado"' : 'style="cursor:default;"') + '>' + (it.estado||'pendiente').toUpperCase() + '</button>' +
       '</div></div>';
   }).join('');
 }
 
 async function cambiarEstadoIdea(index, nuevoEstado){
-  if (currentUser && currentUser.email !== 'prof.edfisica.figueroa@gmail.com') {
+  if (currentUser && currentUser.email !== ADMIN_EMAIL) {
     alert('Solo el administrador puede cambiar el estado de las ideas.');
     return;
   }
@@ -841,7 +841,7 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
 
 function editItem(tipo, index){ openModal(tipo, index); }
 async function deleteItem(tipo, index){
-  if (currentUser && currentUser.email !== 'prof.edfisica.figueroa@gmail.com') {
+  if (currentUser && currentUser.email !== ADMIN_EMAIL) {
     alert('Acceso denegado: Solo el administrador puede eliminar registros.');
     return;
   }
