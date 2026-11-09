@@ -1445,12 +1445,19 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
     cfg.array.unshift(nuevo);
   }
 
-  await persistItem(modalTipo, nuevo, dbId);
-
+  // Render inmediato en pantalla local
   cfg.renderFn();
   renderDashboard();
   renderFeed();
   closeModal();
+
+  // Guardar en Supabase y asignar el ID generado
+  const resData = await persistItem(modalTipo, nuevo, dbId);
+  if (resData && resData.id) {
+    Object.assign(nuevo, resData);
+    saveLocal(cfg.storageKey || modalTipo, cfg.array);
+    cfg.renderFn();
+  }
 });
 
 // Ripple en botones
@@ -1532,6 +1539,27 @@ function renderAllViews(){
 updateSyncIndicator();
 renderAllViews();
 syncFromSupabase();
+setupRealtimeSubscription();
+
+// Escuchar cambios en tiempo real desde Supabase (WebSocket)
+function setupRealtimeSubscription() {
+  if (!supabaseClient) return;
+  try {
+    supabaseClient
+      .channel('db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public' }, () => {
+        syncFromSupabase();
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('Realtime sincronizado con Supabase');
+        }
+      });
+  } catch (err) {
+    console.warn('Error al iniciar canal realtime:', err);
+  }
+}
+
 </script>
 </body>
 </html>
