@@ -157,7 +157,7 @@
   .view{display:none;}
   .view.active{display:block;}
 
-  /* Panel superior: gauge + stats */
+  /* Top Panels */
   .top-panels{display:grid;grid-template-columns:236px 1fr;gap:14px;margin-bottom:28px;}
   .gauge-card{
     background:var(--panel);border:1px solid var(--border);border-radius:10px;
@@ -190,7 +190,7 @@
     font-family:'Inter',sans-serif;font-weight:500;font-size:12px;color:var(--ink-soft);
   }
 
-  /* Vencimientos — estilo tarjeta de inspección (como las etiquetas colgantes de los matafuegos) */
+  /* Vencimientos */
   .venc-list{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:28px;}
   .venc-row{
     display:flex;align-items:center;gap:14px;
@@ -226,7 +226,7 @@
   .pill.proximo{background:var(--amber-soft);color:#a76e1e;}
   .pill.ok{background:var(--green-soft);color:var(--green);}
 
-  /* Tables */
+  /* Tablas */
   .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;}
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
   thead th{
@@ -239,9 +239,9 @@
   td.num{font-variant-numeric:tabular-nums;text-align:right;}
   td.stock-low{color:var(--red);font-weight:600;}
 
-  .toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+  .toolbar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
   input.search{
-    flex:1;max-width:320px;padding:9px 13px;border:1px solid var(--border);
+    flex:1;min-width:240px;max-width:320px;padding:9px 13px;border:1px solid var(--border);
     border-radius:7px;font-size:13px;font-family:'Inter',sans-serif;background:var(--panel);
   }
   input.search:focus{outline:none;border-color:var(--red);}
@@ -257,7 +257,7 @@
   }
   .empty-note b{color:#6b4110;}
 
-  /* Panel de novedades / atención del día */
+  /* Feed / Novedades */
   .feed-panel{
     background:var(--ink);border-radius:14px;padding:22px 22px 8px 22px;margin-bottom:28px;
     position:relative;overflow:hidden;
@@ -295,9 +295,7 @@
   .feed-body{flex:1;min-width:0;}
   .feed-title{color:#F5F3EF;font-size:13.5px;font-weight:600;line-height:1.35;}
   .feed-detail{color:rgba(239,237,232,0.5);font-size:12px;margin-top:2px;line-height:1.4;}
-  .feed-when{
-    font-size:11px;font-weight:600;flex-shrink:0;white-space:nowrap;margin-top:2px;
-  }
+  .feed-when{font-size:11px;font-weight:600;flex-shrink:0;white-space:nowrap;margin-top:2px;}
   .feed-when.vencido{color:#F19999;}
   .feed-when.urgente{color:#F2C77E;}
   .feed-when.stock{color:#F2C77E;}
@@ -309,7 +307,6 @@
   }
   .feed-empty svg{width:18px;height:18px;stroke:#8FCBAA;flex-shrink:0;}
 
-  /* Carrusel (vista simplificada) */
   .feed-carousel{display:flex;align-items:center;gap:10px;position:relative;}
   .feed-nav-btn{
     width:30px;height:30px;border-radius:50%;flex-shrink:0;
@@ -337,14 +334,46 @@
   }
   .feed-toggle:hover{color:#EFEDE8;}
 
-  /* Modal de alta / edición */
+  /* --- SECCION: SEMILLERO DE IDEAS --- */
+  .seed-header-box{
+    background:var(--panel);border:1px solid var(--border);border-left:5px solid var(--hazard);
+    border-radius:10px;padding:16px 20px;margin-bottom:22px;display:flex;
+    justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  }
+  .seed-header-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;}
+  .seed-header-sub{font-size:12.5px;color:var(--ink-soft);margin-top:2px;}
+  .seed-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));gap:16px;}
+  .seed-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:16px 18px;position:relative;display:flex;flex-direction:column;
+    box-shadow:0 3px 8px rgba(0,0,0,0.03);transition:transform .12s, box-shadow .12s;
+  }
+  .seed-card:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,0.06);}
+  .seed-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .seed-badge{
+    font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+    padding:2px 8px;border-radius:12px;
+  }
+  .seed-badge.rubro{background:#FCECD0;color:#965908;}
+  .seed-badge.funcionalidad{background:#E1EDF7;color:#185387;}
+  .seed-badge.urgente{background:var(--red-soft);color:var(--red);}
+  .seed-badge.general{background:var(--panel-soft);color:var(--ink-soft);}
+  .seed-title{font-family:'Inter',sans-serif;font-weight:700;font-size:14.5px;line-height:1.3;margin-bottom:6px;}
+  .seed-text{font-size:12.5px;color:var(--ink);line-height:1.45;flex:1;white-space:pre-wrap;}
+  .seed-meta{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:10px;border-top:1px dashed var(--border);font-size:11px;color:var(--ink-soft);}
+  .seed-status{cursor:pointer;font-weight:600;padding:2px 7px;border-radius:4px;border:1px solid transparent;}
+  .seed-status.pendiente{color:#B86F00;background:var(--amber-soft);border-color:#F2C77E;}
+  .seed-status.en-proceso{color:#185387;background:#E1EDF7;border-color:#A8CCE8;}
+  .seed-status.listo{color:var(--green);background:var(--green-soft);border-color:#B1D8BA;}
+
+  /* Modales y Formularios */
   .modal-overlay{
     position:fixed;inset:0;background:rgba(33,29,24,0.55);
     display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
   }
   .modal-overlay.open{display:flex;}
   .modal{
-    background:var(--panel);border-radius:14px;width:100%;max-width:420px;
+    background:var(--panel);border-radius:14px;width:100%;max-width:440px;
     max-height:90vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,0.3);
     border-top:4px solid var(--red);
   }
@@ -358,14 +387,17 @@
   #modal-form{padding:18px 20px 20px 20px;}
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
-  .field input{
+  .field input, .field select, .field textarea{
     width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:7px;
-    font-size:13.5px;font-family:'Inter',sans-serif;background:var(--panel);
+    font-size:13.5px;font-family:'Inter',sans-serif;background:var(--panel);color:var(--ink);
   }
-  .field input:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(194,42,42,0.12);}
-  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:8px;}
+  .field textarea{min-height:90px;resize:vertical;}
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(194,42,42,0.12);
+  }
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;}
 
-  /* Acciones en filas de tabla */
+  /* Acciones en filas */
   .row-actions{display:flex;gap:6px;justify-content:flex-end;}
   .icon-btn{
     width:28px;height:28px;border-radius:6px;flex-shrink:0;
@@ -379,13 +411,10 @@
   .icon-btn.danger:hover{background:var(--red-soft);}
   .icon-btn.danger:hover svg{stroke:var(--red);}
 
-  .dot-ico{
-    width:9px;height:9px;display:inline-block;vertical-align:-1px;
-    color:var(--red);opacity:.6;margin:0 1px;
-  }
+  .dot-ico{width:9px;height:9px;display:inline-block;vertical-align:-1px;color:var(--red);opacity:.6;margin:0 1px;}
   .feed-detail .dot-ico, .feed-title .dot-ico{opacity:.55;}
 
-  /* Matafuego como acceso rápido — destacado arriba del menú, acoplado al sidebar */
+  /* FAB Menu */
   .fab-dock{position:relative;margin-bottom:18px;}
   .fab-btn-dock{
     position:relative;width:100%;display:flex;align-items:center;gap:12px;
@@ -438,21 +467,18 @@
     to{ transform:translate(var(--dx), var(--dy)) scale(0.15); opacity:0; }
   }
 
-  /* ---------- RESPONSIVE: tablet / Android / iOS ---------- */
+  /* Responsive */
   @media (max-width:860px){
     body{flex-direction:column;}
-
-    /* El sidebar pasa a ser una barra de navegación fija abajo, como en una app */
     .sidebar{
       position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;height:auto;
-      flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom)) 8px;
+      flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom)) 6px;
       z-index:80;box-shadow:0 -4px 16px rgba(0,0,0,0.22);
     }
-    /* En la barra inferior solo caben los accesos a cada sección — lo demás sobra */
     .brand, .fab-dock, .sidebar-foot{display:none;}
     nav{flex-direction:row;width:100%;justify-content:space-around;gap:2px;}
-    .nav-item{flex-direction:column;gap:3px;padding:7px 4px;font-size:10.5px;border-radius:9px;}
-    .nav-item svg{width:19px;height:19px;}
+    .nav-item{flex-direction:column;gap:3px;padding:6px 2px;font-size:10px;border-radius:8px;}
+    .nav-item svg{width:18px;height:18px;}
     .nav-led{display:none;}
 
     .content{padding:16px 16px calc(84px + env(safe-area-inset-bottom)) 16px;}
@@ -460,7 +486,6 @@
     .topbar h1{font-size:18px;}
     .hazard-strip{height:5px;}
 
-    /* Todo lo que era grilla de 2+ columnas pasa a apilarse */
     .top-panels{grid-template-columns:1fr;}
     .gauge-card{max-width:280px;margin:0 auto;}
     .stat-row{grid-template-columns:repeat(2,1fr);}
@@ -472,18 +497,15 @@
     .venc-row .detalle{flex-basis:100%;order:3;}
     .venc-row .fecha{width:auto;margin-left:auto;}
 
-    table{min-width:600px;} /* fuerza el scroll horizontal en vez de aplastar columnas */
-
+    table{min-width:600px;}
     .modal{max-width:100%;margin:0 8px;}
-
-    /* Inputs a 16px: evita que iOS haga zoom automático al enfocarlos */
-    input.search, .field input{font-size:16px;}
+    input.search, .field input, .field textarea, .field select{font-size:16px;}
   }
 
   @media (max-width:420px){
     .stat .num{font-size:21px;}
-    .nav-item{font-size:10px;padding:6px 2px;}
     .topbar .btn span{display:none;}
+    .seed-header-box{padding:12px 14px;}
   }
 </style>
 </head>
@@ -520,6 +542,10 @@
       <span class="fab-label">Accesos rápidos</span>
     </button>
     <div class="fab-menu" id="fab-menu">
+      <button class="fab-menu-item" data-action="idea">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6 1 .9 1 1 1 3h6c0-2 0-2.1 1-3 1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
+        Sembrar una Idea / Tip
+      </button>
       <button class="fab-menu-item" data-action="cliente">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         Nuevo cliente
@@ -541,6 +567,11 @@
       Inicio
       <span class="nav-led"></span>
     </button>
+    <button class="nav-item" data-view="ideas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6 1 .9 1 1 1 3h6c0-2 0-2.1 1-3 1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
+      Semillero
+      <span class="nav-led"></span>
+    </button>
     <button class="nav-item" data-view="clientes">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       Clientes
@@ -557,7 +588,7 @@
       <span class="nav-led"></span>
     </button>
   </nav>
-  <div class="sidebar-foot">Prototipo v0.2 — datos de ejemplo</div>
+  <div class="sidebar-foot">Prototipo Friera Matafuegos</div>
 </div>
 
 <div class="main">
@@ -574,7 +605,9 @@
 
     <!-- DASHBOARD -->
     <div class="view active" id="view-dashboard">
-      <div class="empty-note"><b>Prototipo con datos de ejemplo.</b> Cuando me pases tu Excel, reemplazamos esta data por la tuya real (clientes, stock y ventas) manteniendo el mismo panel.</div>
+      <div class="empty-note">
+        <b>💡 Canal abierto con Friera:</b> Usá la pestaña <b>Semillero</b> para anotar requerimientos específicos del rubro matafuegos, tipos de tarjetas, circuitos de inspección o detalles que queramos incluir en las siguientes versiones.
+      </div>
 
       <div class="feed-panel">
         <div class="feed-head">
@@ -627,6 +660,27 @@
       </div>
     </div>
 
+    <!-- SEMILLERO DE IDEAS (FRIERA / PROPIETARIO) -->
+    <div class="view" id="view-ideas">
+      <div class="seed-header-box">
+        <div>
+          <div class="seed-header-title">Semillero de Ideas & Tips del Rubro</div>
+          <div class="seed-header-sub">Espacio directo para que Friera deje requerimientos, mañas del taller, normativas o ideas de mejora.</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn ghost" id="btn-export-ideas">📋 Copiar resumen</button>
+          <button class="btn" onclick="openModal('idea')">+ Nueva Idea / Tip</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input class="search" id="search-ideas" placeholder="Buscar idea o tip...">
+        <div style="font-size:12px;color:var(--ink-soft);" id="ideas-counter"></div>
+      </div>
+
+      <div class="seed-grid" id="ideas-grid"></div>
+    </div>
+
     <!-- CLIENTES -->
     <div class="view" id="view-clientes">
       <div class="toolbar">
@@ -669,6 +723,7 @@
   </div>
 </div>
 
+<!-- MODAL GENÉRICO -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-head">
@@ -686,7 +741,6 @@
 </div>
 
 <script>
-// ---------- DATOS DE EJEMPLO (se reemplazan con el Excel real) ----------
 const hoy = new Date();
 
 function diasDesdeHoy(fechaStr){
@@ -706,17 +760,38 @@ function fmtMoneda(n){
   return '$' + n.toLocaleString('es-AR');
 }
 
-const clientes = [
-  {nombre:'Distribuidora Norte SRL', direccion:'Av. San Martín 1420, Santa Fe', matafuegos:6, vencimiento:'2026-09-08'},
-  {nombre:'Panadería Los Hornos', direccion:'Bv. Gálvez 2210, Santa Fe', matafuegos:2, vencimiento:'2026-09-15'},
-  {nombre:'Estudio Contable Pérez', direccion:'25 de Mayo 890, Santa Fe', matafuegos:1, vencimiento:'2026-08-20'},
-  {nombre:'Transporte Rivadavia', direccion:'Ruta 11 Km 456', matafuegos:12, vencimiento:'2026-10-02'},
-  {nombre:'Farmacia Central', direccion:'San Jerónimo 1105, Santa Fe', matafuegos:3, vencimiento:'2026-12-01'},
-  {nombre:'Taller Mecánico Gómez', direccion:'Av. Freyre 3340, Santa Fe', matafuegos:4, vencimiento:'2026-09-20'},
-  {nombre:'Colegio San José', direccion:'Rivadavia 2100, Santa Fe', matafuegos:18, vencimiento:'2027-02-10'},
+// Persistencia en localStorage
+function loadData(key, fallback){
+  try{
+    const saved = localStorage.getItem('matafuegos_' + key);
+    return saved ? JSON.parse(saved) : fallback;
+  }catch(e){
+    return fallback;
+  }
+}
+function saveData(key, val){
+  try{
+    localStorage.setItem('matafuegos_' + key, JSON.stringify(val));
+  }catch(e){}
+}
+
+const defaultIdeas = [
+  {id:1, titulo:'Tarjeta de control de recargas', categoria:'rubro', texto:'Cada matafuego tiene que tener registrada su fecha de prueba hidráulica (PH cada 5 años) y recarga anual. Estaría bueno poder cargar el número de tarjeta DPS/IRAM de la oblea.', autor:'Fribera', estado:'pendiente', fecha:'2026-11-09'},
+  {id:2, titulo:'Alerta de retiro por lote', categoria:'funcionalidad', texto:'Cuando un cliente tiene muchos matafuegos (ej. un colegio o una fábrica), que podamos agruparlos para retirarlos y dejar equipos sustitutos provisorios.', autor:'Fribera', estado:'en-proceso', fecha:'2026-11-09'},
+  {id:3, titulo:'Botón para mandar WhatsApp al cliente', categoria:'funcionalidad', texto:'Que al lado del cliente que tiene la carga vencida haya un botón que abra WhatsApp Web con el mensaje prearmado: "Hola, te recordamos que este mes vencen tus matafuegos..."', autor:'Fribera', estado:'pendiente', fecha:'2026-11-09'}
 ];
 
-const stock = [
+const clientes = loadData('clientes', [
+  {nombre:'Distribuidora Norte SRL', direccion:'Av. San Martín 1420, Santa Fe', matafuegos:6, vencimiento:'2026-11-04'},
+  {nombre:'Panadería Los Hornos', direccion:'Bv. Gálvez 2210, Santa Fe', matafuegos:2, vencimiento:'2026-11-20'},
+  {nombre:'Estudio Contable Pérez', direccion:'25 de Mayo 890, Santa Fe', matafuegos:1, vencimiento:'2026-10-15'},
+  {nombre:'Transporte Rivadavia', direccion:'Ruta 11 Km 456', matafuegos:12, vencimiento:'2026-12-02'},
+  {nombre:'Farmacia Central', direccion:'San Jerónimo 1105, Santa Fe', matafuegos:3, vencimiento:'2027-01-15'},
+  {nombre:'Taller Mecánico Gómez', direccion:'Av. Freyre 3340, Santa Fe', matafuegos:4, vencimiento:'2026-11-25'},
+  {nombre:'Colegio San José', direccion:'Rivadavia 2100, Santa Fe', matafuegos:18, vencimiento:'2027-04-10'},
+]);
+
+const stock = loadData('stock', [
   {producto:'Matafuego ABC', tipo:'Polvo Químico (PQS)', capacidad:'5 kg', cant:14, min:10, precio:38500},
   {producto:'Matafuego ABC', tipo:'Polvo Químico (PQS)', capacidad:'10 kg', cant:6, min:8, precio:52300},
   {producto:'Matafuego CO2', tipo:'Dióxido de Carbono', capacidad:'5 kg', cant:9, min:6, precio:61000},
@@ -724,17 +799,19 @@ const stock = [
   {producto:'Matafuego Espuma', tipo:'AFFF', capacidad:'9 lt', cant:11, min:5, precio:47200},
   {producto:'Soporte de pared', tipo:'Accesorio', capacidad:'—', cant:22, min:10, precio:4300},
   {producto:'Señalética luminiscente', tipo:'Accesorio', capacidad:'—', cant:31, min:15, precio:2100},
-];
+]);
 
-const ventas = [
-  {fecha:'2026-08-27', cliente:'Distribuidora Norte SRL', detalle:'Recarga x6 PQS 5kg', total:98400},
-  {fecha:'2026-08-25', cliente:'Farmacia Central', detalle:'Venta matafuego CO2 5kg', total:61000},
-  {fecha:'2026-08-22', cliente:'Panadería Los Hornos', detalle:'Inspección + recarga x2', total:34200},
-  {fecha:'2026-08-19', cliente:'Taller Mecánico Gómez', detalle:'Venta matafuego ABC 10kg', total:52300},
-  {fecha:'2026-08-14', cliente:'Colegio San José', detalle:'Recarga x18 mixto', total:412000},
-];
+const ventas = loadData('ventas', [
+  {fecha:'2026-11-06', cliente:'Distribuidora Norte SRL', detalle:'Recarga x6 PQS 5kg', total:98400},
+  {fecha:'2026-10-28', cliente:'Farmacia Central', detalle:'Venta matafuego CO2 5kg', total:61000},
+  {fecha:'2026-10-22', cliente:'Panadería Los Hornos', detalle:'Inspección + recarga x2', total:34200},
+  {fecha:'2026-10-18', cliente:'Taller Mecánico Gómez', detalle:'Venta matafuego ABC 10kg', total:52300},
+  {fecha:'2026-10-12', cliente:'Colegio San José', detalle:'Recarga x18 mixto', total:412000},
+]);
 
-// ---------- ICONOS (feed) ----------
+let ideas = loadData('ideas', defaultIdeas);
+
+// Iconos feed
 const icons = {
   vencido: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
   urgente: '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
@@ -750,12 +827,10 @@ function relativo(dias){
   return 'en ' + dias + ' días';
 }
 
-// Mini ícono de matafuego usado como separador temático en vez de "·"
 const PUNTO = '<svg class="dot-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2h4a1 1 0 0 1 1 1v1.2a2 2 0 0 1 2 2V8l-1.2 2H14V7h-4v3H8.2L7 8V6.2a2 2 0 0 1 2-2V3a1 1 0 0 1 1-1z"/><path d="M7.5 9h9a1.3 1.3 0 0 1 1.3 1.3V20a2.7 2.7 0 0 1-2.7 2.7h-6.2A2.7 2.7 0 0 1 6.2 20V10.3A1.3 1.3 0 0 1 7.5 9z"/></svg>';
 
 function generarNovedades(){
   const items = [];
-
   clientes.forEach(c=>{
     const dias = diasDesdeHoy(c.vencimiento);
     if(dias < 0){
@@ -798,15 +873,14 @@ function generarNovedades(){
 }
 
 function itemHTML(it){
-  return '' +
-    '<div class="feed-item">' +
-      '<div class="feed-icon ' + it.icono + '">' + icons[it.icono] + '</div>' +
-      '<div class="feed-body">' +
-        '<div class="feed-title">' + it.titulo + '</div>' +
-        '<div class="feed-detail">' + it.detalle + '</div>' +
-      '</div>' +
-      '<div class="feed-when ' + it.icono + '">' + it.cuando + '</div>' +
-    '</div>';
+  return '<div class="feed-item">' +
+    '<div class="feed-icon ' + it.icono + '">' + icons[it.icono] + '</div>' +
+    '<div class="feed-body">' +
+      '<div class="feed-title">' + it.titulo + '</div>' +
+      '<div class="feed-detail">' + it.detalle + '</div>' +
+    '</div>' +
+    '<div class="feed-when ' + it.icono + '">' + it.cuando + '</div>' +
+  '</div>';
 }
 
 let feedItems = [];
@@ -863,7 +937,7 @@ function goFeed(delta){
   feedIndex = (feedIndex + delta + feedItems.length) % feedItems.length;
   renderFeedCurrent();
   renderFeedDots();
-  startFeedTimer(); // reinicia la cuenta de 15s al pasar manual
+  startFeedTimer();
 }
 
 function startFeedTimer(){
@@ -890,7 +964,6 @@ document.getElementById('feed-toggle').addEventListener('click', ()=>{
   if(feedExpanded){ clearInterval(feedTimerId); } else { startFeedTimer(); }
 });
 
-// ---------- GAUGE (manómetro de estado general, con animación de "arranque") ----------
 function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
 
 function renderGauge(){
@@ -931,7 +1004,6 @@ function renderGauge(){
   }
 }
 
-// ---------- RENDER ----------
 function renderDashboard(){
   const vencidos = clientes.filter(c => diasDesdeHoy(c.vencimiento) < 0).length;
   const proximos = clientes.filter(c => { const d = diasDesdeHoy(c.vencimiento); return d>=0 && d<=30; }).length;
@@ -1017,8 +1089,77 @@ function renderVentas(filtro=''){
   }).join('');
 }
 
+// ---------- RENDER DE IDEAS (SEMILLERO) ----------
+function renderIdeas(filtro=''){
+  const f = filtro.toLowerCase();
+  const filtradas = ideas.filter(it=>
+    it.titulo.toLowerCase().includes(f) ||
+    it.texto.toLowerCase().includes(f) ||
+    it.categoria.toLowerCase().includes(f)
+  );
+
+  document.getElementById('ideas-counter').textContent = filtradas.length + ' ideas registradas';
+
+  const grid = document.getElementById('ideas-grid');
+  if(!filtradas.length){
+    grid.innerHTML = '<div style="grid-column:1/-1;background:var(--panel);border:1px dashed var(--border);border-radius:10px;padding:32px;text-align:center;color:var(--ink-soft);">' +
+      'No hay ideas registradas todavía. Usá el botón "+ Nueva Idea / Tip" para que Friera deje sus comentarios.' +
+    '</div>';
+    return;
+  }
+
+  grid.innerHTML = filtradas.map(it=>{
+    const idx = ideas.indexOf(it);
+    const catLabels = {rubro:'Rubro & Taller', funcionalidad:'Nueva Función', urgente:'Prioritario', general:'General'};
+    const catClass = it.categoria || 'general';
+    const statusText = it.estado === 'listo' ? '✓ Implementado' : it.estado === 'en-proceso' ? '⏳ En proceso' : '📌 Pendiente';
+    const nextStatus = it.estado === 'pendiente' ? 'en-proceso' : it.estado === 'en-proceso' ? 'listo' : 'pendiente';
+
+    return '<div class="seed-card">' +
+      '<div class="seed-card-head">' +
+        '<span class="seed-badge ' + catClass + '">' + (catLabels[catClass] || catClass) + '</span>' +
+        '<div class="row-actions">' +
+          '<button class="icon-btn" onclick="editItem(\'idea\',' + idx + ')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>' +
+          '<button class="icon-btn danger" onclick="deleteItem(\'idea\',' + idx + ')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="seed-title">' + it.titulo + '</div>' +
+      '<div class="seed-text">' + it.texto + '</div>' +
+      '<div class="seed-meta">' +
+        '<span>Por ' + (it.autor || 'Fribera') + ' · ' + fmtFecha(it.fecha || new Date()) + '</span>' +
+        '<button type="button" class="seed-status ' + (it.estado||'pendiente') + '" onclick="cambiarEstadoIdea(' + idx + ',\'' + nextStatus + '\')" title="Click para alternar estado">' +
+          statusText +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function cambiarEstadoIdea(index, nuevoEstado){
+  ideas[index].estado = nuevoEstado;
+  saveData('ideas', ideas);
+  renderIdeas(document.getElementById('search-ideas').value);
+}
+
+// Copiar ideas en texto limpio
+document.getElementById('btn-export-ideas').addEventListener('click', ()=>{
+  if(!ideas.length){
+    alert('No hay ideas para copiar todavía.');
+    return;
+  }
+  const resumen = ideas.map((it, i) =>
+    (i+1) + '. [' + (it.categoria || 'General').toUpperCase() + '] ' + it.titulo +
+    '\nEstado: ' + (it.estado || 'Pendiente') +
+    '\nDetalle: ' + it.texto + '\n'
+  ).join('\n');
+
+  navigator.clipboard.writeText('🌱 Semillero de Ideas Friera Matafuegos:\n\n' + resumen)
+    .then(()=>alert('¡Ideas copiadas al portapapeles! Podés pegarlas en WhatsApp.'))
+    .catch(()=>alert('No se pudo copiar automáticamente, podés seleccionarlas de la pantalla.'));
+});
+
 // ---------- NAV ----------
-const titles = {dashboard:'Inicio', clientes:'Clientes', stock:'Stock', ventas:'Ventas'};
+const titles = {dashboard:'Inicio', ideas:'Semillero de Ideas', clientes:'Clientes', stock:'Stock', ventas:'Ventas'};
 let currentView = 'dashboard';
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -1034,10 +1175,10 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
   });
 });
 
-// ---------- MODAL: alta y edición ----------
+// ---------- MODAL ENTIDADES ----------
 const entidades = {
   cliente: {
-    titulo:'cliente', tituloPlural:'Clientes', array: clientes, view:'clientes', renderFn: ()=>renderClientes(),
+    titulo:'cliente', array: clientes, storageKey:'clientes', view:'clientes', renderFn: ()=>renderClientes(),
     campos:[
       {key:'nombre', label:'Nombre / Razón social', type:'text'},
       {key:'direccion', label:'Dirección', type:'text'},
@@ -1046,7 +1187,7 @@ const entidades = {
     ]
   },
   stock: {
-    titulo:'producto', tituloPlural:'Stock', array: stock, view:'stock', renderFn: ()=>renderStock(),
+    titulo:'producto', array: stock, storageKey:'stock', view:'stock', renderFn: ()=>renderStock(),
     campos:[
       {key:'producto', label:'Producto', type:'text'},
       {key:'tipo', label:'Tipo', type:'text'},
@@ -1057,12 +1198,26 @@ const entidades = {
     ]
   },
   venta: {
-    titulo:'venta', tituloPlural:'Ventas', array: ventas, view:'ventas', renderFn: ()=>renderVentas(),
+    titulo:'venta', array: ventas, storageKey:'ventas', view:'ventas', renderFn: ()=>renderVentas(),
     campos:[
       {key:'fecha', label:'Fecha', type:'date'},
       {key:'cliente', label:'Cliente', type:'text'},
       {key:'detalle', label:'Detalle', type:'text'},
       {key:'total', label:'Total', type:'number'},
+    ]
+  },
+  idea: {
+    titulo:'Idea / Tip del Rubro', array: ideas, storageKey:'ideas', view:'ideas', renderFn: ()=>renderIdeas(),
+    campos:[
+      {key:'titulo', label:'Título corto de la idea o requerimiento', type:'text'},
+      {key:'categoria', label:'Tipo de aporte', type:'select', options:[
+        {val:'rubro', label:'Normativa / Inspección / Taller'},
+        {val:'funcionalidad', label:'Nueva función deseada'},
+        {val:'urgente', label:'Detalle clave / Urgente'},
+        {val:'general', label:'Sugerencia general'}
+      ]},
+      {key:'autor', label:'¿Quién lo propone?', type:'text', defaultVal:'Fribera'},
+      {key:'texto', label:'Detalle o explicación (lo más específico posible)', type:'textarea'}
     ]
   }
 };
@@ -1071,12 +1226,11 @@ let modalTipo = null;
 let modalIndex = null;
 
 function accionesHTML(tipo, i){
-  return '' +
-    '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')" aria-label="Editar">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>' +
+  return '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')" aria-label="Editar">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>' +
     '</button>' +
     '<button type="button" class="icon-btn danger" onclick="deleteItem(\'' + tipo + '\', ' + i + ')" aria-label="Eliminar">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
     '</button>';
 }
 
@@ -1087,14 +1241,30 @@ function openModal(tipo, index){
   const item = modalIndex !== null ? cfg.array[modalIndex] : null;
 
   document.getElementById('modal-title').textContent = (modalIndex !== null ? 'Editar ' : 'Nuevo ') + cfg.titulo;
-  document.getElementById('modal-fields').innerHTML = cfg.campos.map(c=>
-    '<div class="field">' +
+  
+  document.getElementById('modal-fields').innerHTML = cfg.campos.map(c=>{
+    const val = item ? (item[c.key] || '') : (c.defaultVal || '');
+    if(c.type === 'textarea'){
+      return '<div class="field">' +
+        '<label for="field-' + c.key + '">' + c.label + '</label>' +
+        '<textarea id="field-' + c.key + '" placeholder="Escribí acá el detalle..." required>' + val + '</textarea>' +
+      '</div>';
+    }
+    if(c.type === 'select'){
+      const optionsHTML = c.options.map(opt =>
+        '<option value="' + opt.val + '" ' + (val===opt.val?'selected':'') + '>' + opt.label + '</option>'
+      ).join('');
+      return '<div class="field">' +
+        '<label for="field-' + c.key + '">' + c.label + '</label>' +
+        '<select id="field-' + c.key + '">' + optionsHTML + '</select>' +
+      '</div>';
+    }
+    return '<div class="field">' +
       '<label for="field-' + c.key + '">' + c.label + '</label>' +
-      '<input id="field-' + c.key + '" type="' + c.type + '" ' +
-        (item ? 'value="' + String(item[c.key]).replace(/"/g,'&quot;') + '"' : '') +
-        ' required>' +
-    '</div>'
-  ).join('');
+      '<input id="field-' + c.key + '" type="' + c.type + '" value="' + String(val).replace(/"/g,'&quot;') + '" required>' +
+    '</div>';
+  }).join('');
+
   document.getElementById('modal-overlay').classList.add('open');
 }
 
@@ -1109,17 +1279,18 @@ function editItem(tipo, index){ openModal(tipo, index); }
 function deleteItem(tipo, index){
   const cfg = entidades[tipo];
   const item = cfg.array[index];
-  const nombreItem = item.nombre || item.producto || item.cliente || 'este registro';
+  const nombreItem = item.titulo || item.nombre || item.producto || item.cliente || 'este registro';
   if(!confirm('¿Eliminar ' + nombreItem + '? Esta acción no se puede deshacer.')) return;
   cfg.array.splice(index, 1);
+  saveData(cfg.storageKey, cfg.array);
   cfg.renderFn();
   renderDashboard();
   renderFeed();
 }
 
 document.getElementById('btn-add').addEventListener('click', ()=>{
-  const tipoPorVista = {dashboard:'cliente', clientes:'cliente', stock:'stock', ventas:'venta'};
-  openModal(tipoPorVista[currentView] || 'cliente');
+  const tipoPorVista = {dashboard:'idea', ideas:'idea', clientes:'cliente', stock:'stock', ventas:'venta'};
+  openModal(tipoPorVista[currentView] || 'idea');
 });
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-cancel').addEventListener('click', closeModal);
@@ -1132,21 +1303,29 @@ document.getElementById('modal-form').addEventListener('submit', (e)=>{
   const cfg = entidades[modalTipo];
   const nuevo = {};
   cfg.campos.forEach(c=>{
-    const val = document.getElementById('field-' + c.key).value;
-    nuevo[c.key] = c.type === 'number' ? Number(val) : val;
+    const el = document.getElementById('field-' + c.key);
+    nuevo[c.key] = c.type === 'number' ? Number(el.value) : el.value;
   });
+
+  if(modalTipo === 'idea'){
+    nuevo.fecha = nuevo.fecha || new Date().toISOString().split('T')[0];
+    if(modalIndex === null) nuevo.estado = 'pendiente';
+  }
+
   if(modalIndex !== null){
     Object.assign(cfg.array[modalIndex], nuevo);
   } else {
     cfg.array.push(nuevo);
   }
+
+  saveData(cfg.storageKey, cfg.array);
   cfg.renderFn();
   renderDashboard();
   renderFeed();
   closeModal();
 });
 
-// Ripple de "activación" en los botones tipo pulsador
+// Ripple en botones
 document.addEventListener('click', (e)=>{
   const btn = e.target.closest('.btn');
   if(!btn || btn.classList.contains('ghost')) return;
@@ -1161,7 +1340,7 @@ document.addEventListener('click', (e)=>{
   setTimeout(()=>ripple.remove(), 550);
 });
 
-// ---------- FAB: matafuego con accesos rápidos ----------
+// FAB
 const fabBtn = document.getElementById('fab-btn');
 const fabIcon = fabBtn.querySelector('.fab-icon');
 const fabMenu = document.getElementById('fab-menu');
@@ -1204,14 +1383,18 @@ document.addEventListener('click', (e)=>{
   }
 });
 
+// Filtros de búsqueda
 document.getElementById('search-clientes').addEventListener('input', e=>renderClientes(e.target.value));
 document.getElementById('search-stock').addEventListener('input', e=>renderStock(e.target.value));
 document.getElementById('search-ventas').addEventListener('input', e=>renderVentas(e.target.value));
+document.getElementById('search-ideas').addEventListener('input', e=>renderIdeas(e.target.value));
 
 document.getElementById('topbar-date').textContent = hoy.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
+// Render inicial
 renderFeed();
 renderDashboard();
+renderIdeas();
 renderClientes();
 renderStock();
 renderVentas();
