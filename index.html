@@ -824,11 +824,7 @@ function saveLocal(key, val){
   }catch(e){}
 }
 
-const defaultIdeas = [
-  {id:1, titulo:'Tarjeta de control de recargas', categoria:'rubro', texto:'Cada matafuego tiene que tener registrada su fecha de prueba hidráulica (PH cada 5 años) y recarga anual. Estaría bueno poder cargar el número de tarjeta DPS/IRAM de la oblea.', autor:'Fribera', estado:'pendiente', fecha:'2026-11-09'},
-  {id:2, titulo:'Alerta de retiro por lote', categoria:'funcionalidad', texto:'Cuando un cliente tiene muchos matafuegos (ej. un colegio o una fábrica), que podamos agruparlos para retirarlos y dejar equipos sustitutos provisorios.', autor:'Fribera', estado:'en-proceso', fecha:'2026-11-09'},
-  {id:3, titulo:'Botón para mandar WhatsApp al cliente', categoria:'funcionalidad', texto:'Que al lado del cliente que tiene la carga vencida haya un botón que abra WhatsApp Web con el mensaje prearmado: "Hola, te recordamos que este mes vencen tus matafuegos..."', autor:'Fribera', estado:'pendiente', fecha:'2026-11-09'}
-];
+const defaultIdeas = [];
 
 const defaultClientes = [
   {nombre:'Distribuidora Norte SRL', direccion:'Av. San Martín 1420, Santa Fe', matafuegos:6, vencimiento:'2026-11-04'},
@@ -858,26 +854,67 @@ const defaultVentas = [
   {fecha:'2026-10-12', cliente:'Colegio San José', detalle:'Recarga x18 mixto', total:412000},
 ];
 
+let ideas = loadLocal('ideas', defaultIdeas);
 let clientes = loadLocal('clientes', defaultClientes);
 let stock = loadLocal('stock', defaultStock);
 let ventas = loadLocal('ventas', defaultVentas);
-let ideas = loadLocal('ideas', defaultIdeas);
 
-// Operaciones con Supabase
+// Entidades reactivas (los getters garantizan siempre el array actualizado)
+const entidades = {
+  clientes: {
+    titulo:'cliente', get array(){ return clientes; }, set array(v){ clientes = v; }, view:'clientes', renderFn: ()=>renderClientes(),
+    campos:[
+      {key:'nombre', label:'Nombre / Razón social', type:'text'},
+      {key:'direccion', label:'Dirección', type:'text'},
+      {key:'matafuegos', label:'Matafuegos instalados', type:'number'},
+      {key:'vencimiento', label:'Próximo vencimiento', type:'date'},
+    ]
+  },
+  stock: {
+    titulo:'producto', get array(){ return stock; }, set array(v){ stock = v; }, view:'stock', renderFn: ()=>renderStock(),
+    campos:[
+      {key:'producto', label:'Producto', type:'text'},
+      {key:'tipo', label:'Tipo', type:'text'},
+      {key:'capacidad', label:'Capacidad (ej: 5 kg, o — si no aplica)', type:'text'},
+      {key:'cant', label:'Stock actual', type:'number'},
+      {key:'min', label:'Mínimo recomendado', type:'number'},
+      {key:'precio', label:'Precio', type:'number'},
+    ]
+  },
+  ventas: {
+    titulo:'venta', get array(){ return ventas; }, set array(v){ ventas = v; }, view:'ventas', renderFn: ()=>renderVentas(),
+    campos:[
+      {key:'fecha', label:'Fecha', type:'date'},
+      {key:'cliente', label:'Cliente', type:'text'},
+      {key:'detalle', label:'Detalle', type:'text'},
+      {key:'total', label:'Total', type:'number'},
+    ]
+  },
+  ideas: {
+    titulo:'Idea / Tip del Rubro', get array(){ return ideas; }, set array(v){ ideas = v; }, view:'ideas', renderFn: ()=>renderIdeas(),
+    campos:[
+      {key:'titulo', label:'Título corto de la idea o requerimiento', type:'text'},
+      {key:'categoria', label:'Tipo de aporte', type:'select', options:[
+        {val:'rubro', label:'Normativa / Inspección / Taller'},
+        {val:'funcionalidad', label:'Nueva función deseada'},
+        {val:'urgente', label:'Detalle clave / Urgente'},
+        {val:'general', label:'Sugerencia general'}
+      ]},
+      {key:'autor', label:'¿Quién lo propone?', type:'text', defaultVal:'Fribera'},
+      {key:'texto', label:'Detalle o explicación (lo más específico posible)', type:'textarea'}
+    ]
+  }
+};
+
+// Sincronización completa con Supabase
 async function syncFromSupabase() {
   if (!supabaseClient) return;
 
   try {
     const resIdeas = await supabaseClient.from('ideas').select('*').order('created_at', { ascending: false });
-    if (!resIdeas.error && resIdeas.data && resIdeas.data.length > 0) {
+    if (!resIdeas.error && resIdeas.data) {
       ideas = resIdeas.data;
       saveLocal('ideas', ideas);
-    } else if (resIdeas.data && resIdeas.data.length === 0 && ideas.length > 0) {
-      for (const i of ideas) {
-        await supabaseClient.from('ideas').insert({
-          titulo: i.titulo, categoria: i.categoria, texto: i.texto, autor: i.autor || 'Fribera', estado: i.estado || 'pendiente'
-        });
-      }
     }
 
     const resClientes = await supabaseClient.from('clientes').select('*');
@@ -909,12 +946,16 @@ async function syncFromSupabase() {
 }
 
 async function persistItem(tableName, item, id = null) {
-  saveLocal(tableName, entidades[tableName].array);
-  if (!supabaseClient) return;
+  if (!supabaseClient) {
+    saveLocal(tableName, entidades[tableName].array);
+    return null;
+  }
 
   try {
     if (id) {
-      await supabaseClient.from(tableName).update(item).eq('id', id);
+      const { data, error } = await supabaseClient.from(tableName).update(item).eq('id', id).select();
+      saveLocal(tableName, entidades[tableName].array);
+      return (!error && data && data[0]) ? data[0] : null;
     } else {
       const { data, error } = await supabaseClient.from(tableName).insert([item]).select();
       if (!error && data && data[0]) {
@@ -924,13 +965,17 @@ async function persistItem(tableName, item, id = null) {
   } catch (err) {
     console.error('Error persistiendo en Supabase:', err);
   }
+  return null;
 }
 
-async function deleteFromDb(tableName, id) {
-  saveLocal(tableName, entidades[tableName].array);
-  if (!supabaseClient || !id) return;
+async function deleteFromDb(tableName, id, itemFallback = null) {
+  if (!supabaseClient) return;
   try {
-    await supabaseClient.from(tableName).delete().eq('id', id);
+    if (id) {
+      await supabaseClient.from(tableName).delete().eq('id', id);
+    } else if (itemFallback && itemFallback.titulo) {
+      await supabaseClient.from(tableName).delete().eq('titulo', itemFallback.titulo);
+    }
   } catch (err) {
     console.error('Error eliminando de Supabase:', err);
   }
@@ -1261,10 +1306,12 @@ function renderIdeas(filtro=''){
 }
 
 async function cambiarEstadoIdea(index, nuevoEstado){
-  ideas[index].estado = nuevoEstado;
   const idea = ideas[index];
-  await persistItem('ideas', { estado: nuevoEstado }, idea.id);
+  if(!idea) return;
+  idea.estado = nuevoEstado;
+  saveLocal('ideas', ideas);
   renderIdeas(document.getElementById('search-ideas').value);
+  await persistItem('ideas', { estado: nuevoEstado }, idea.id);
 }
 
 document.getElementById('btn-export-ideas').addEventListener('click', ()=>{
@@ -1299,53 +1346,6 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
     document.getElementById('topbar-title').textContent = titles[view];
   });
 });
-
-// ---------- MODAL ENTIDADES ----------
-const entidades = {
-  clientes: {
-    titulo:'cliente', array: clientes, view:'clientes', renderFn: ()=>renderClientes(),
-    campos:[
-      {key:'nombre', label:'Nombre / Razón social', type:'text'},
-      {key:'direccion', label:'Dirección', type:'text'},
-      {key:'matafuegos', label:'Matafuegos instalados', type:'number'},
-      {key:'vencimiento', label:'Próximo vencimiento', type:'date'},
-    ]
-  },
-  stock: {
-    titulo:'producto', array: stock, view:'stock', renderFn: ()=>renderStock(),
-    campos:[
-      {key:'producto', label:'Producto', type:'text'},
-      {key:'tipo', label:'Tipo', type:'text'},
-      {key:'capacidad', label:'Capacidad (ej: 5 kg, o — si no aplica)', type:'text'},
-      {key:'cant', label:'Stock actual', type:'number'},
-      {key:'min', label:'Mínimo recomendado', type:'number'},
-      {key:'precio', label:'Precio', type:'number'},
-    ]
-  },
-  ventas: {
-    titulo:'venta', array: ventas, view:'ventas', renderFn: ()=>renderVentas(),
-    campos:[
-      {key:'fecha', label:'Fecha', type:'date'},
-      {key:'cliente', label:'Cliente', type:'text'},
-      {key:'detalle', label:'Detalle', type:'text'},
-      {key:'total', label:'Total', type:'number'},
-    ]
-  },
-  ideas: {
-    titulo:'Idea / Tip del Rubro', array: ideas, view:'ideas', renderFn: ()=>renderIdeas(),
-    campos:[
-      {key:'titulo', label:'Título corto de la idea o requerimiento', type:'text'},
-      {key:'categoria', label:'Tipo de aporte', type:'select', options:[
-        {val:'rubro', label:'Normativa / Inspección / Taller'},
-        {val:'funcionalidad', label:'Nueva función deseada'},
-        {val:'urgente', label:'Detalle clave / Urgente'},
-        {val:'general', label:'Sugerencia general'}
-      ]},
-      {key:'autor', label:'¿Quién lo propone?', type:'text', defaultVal:'Fribera'},
-      {key:'texto', label:'Detalle o explicación (lo más específico posible)', type:'textarea'}
-    ]
-  }
-};
 
 let modalTipo = null;
 let modalIndex = null;
@@ -1404,13 +1404,20 @@ function editItem(tipo, index){ openModal(tipo, index); }
 async function deleteItem(tipo, index){
   const cfg = entidades[tipo];
   const item = cfg.array[index];
+  if(!item) return;
+
   const nombreItem = item.titulo || item.nombre || item.producto || item.cliente || 'este registro';
   if(!confirm('¿Eliminar ' + nombreItem + '? Esta acción no se puede deshacer.')) return;
+
+  // 1. Quitar de memoria local y repintar al instante
   cfg.array.splice(index, 1);
-  await deleteFromDb(tipo, item.id);
+  saveLocal(tipo, cfg.array);
   cfg.renderFn();
   renderDashboard();
   renderFeed();
+
+  // 2. Eliminar en Supabase
+  await deleteFromDb(tipo, item.id, item);
 }
 
 document.getElementById('btn-add').addEventListener('click', ()=>{
@@ -1445,17 +1452,18 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
     cfg.array.unshift(nuevo);
   }
 
-  // Render inmediato en pantalla local
+  // 1. Refrescar UI de inmediato
+  saveLocal(modalTipo, cfg.array);
   cfg.renderFn();
   renderDashboard();
   renderFeed();
   closeModal();
 
-  // Guardar en Supabase y asignar el ID generado
+  // 2. Guardar en Supabase y fijar ID devuelto
   const resData = await persistItem(modalTipo, nuevo, dbId);
-  if (resData && resData.id) {
+  if(resData && resData.id){
     Object.assign(nuevo, resData);
-    saveLocal(cfg.storageKey || modalTipo, cfg.array);
+    saveLocal(modalTipo, cfg.array);
     cfg.renderFn();
   }
 });
@@ -1542,13 +1550,17 @@ syncFromSupabase();
 setupRealtimeSubscription();
 
 // Escuchar cambios en tiempo real desde Supabase (WebSocket)
+let realtimeDebounce = null;
 function setupRealtimeSubscription() {
   if (!supabaseClient) return;
   try {
     supabaseClient
       .channel('db-changes')
       .on('postgres_changes', { event: '*', schema: 'public' }, () => {
-        syncFromSupabase();
+        clearTimeout(realtimeDebounce);
+        realtimeDebounce = setTimeout(() => {
+          syncFromSupabase();
+        }, 300);
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
@@ -1559,7 +1571,6 @@ function setupRealtimeSubscription() {
     console.warn('Error al iniciar canal realtime:', err);
   }
 }
-
 </script>
 </body>
 </html>
