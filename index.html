@@ -320,6 +320,7 @@
     .venc-row{flex-wrap:wrap; gap: 12px;}
     .venc-row .detalle{flex-basis:100%;order:3; margin-left: 0;}
     table{min-width:700px;}
+    .desktop-spacer, .desktop-divider { display: none !important; }
   }
 </style>
 
@@ -362,15 +363,10 @@
       <div class="brand-sub">Panel de Gestión</div>
     </div>
 
-    <nav>
+    <nav style="flex: 1;">
       <button class="nav-item active" data-view="dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
         Inicio
-        <span class="nav-led"></span>
-      </button>
-      <button class="nav-item" data-view="ideas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6 1 .9 1 1 1 3h6c0-2 0-2.1 1-3 1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
-        Semillero
         <span class="nav-led"></span>
       </button>
       <button class="nav-item" data-view="clientes">
@@ -386,6 +382,15 @@
       <button class="nav-item" data-view="ventas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Ventas
+        <span class="nav-led"></span>
+      </button>
+      
+      <div class="desktop-spacer" style="flex: 1;"></div>
+      <div class="desktop-divider" style="margin: 10px 14px 4px 14px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px;">Desarrollo & Mejoras</div>
+      
+      <button class="nav-item" data-view="ideas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6 1 .9 1 1 1 3h6c0-2 0-2.1 1-3 1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
+        Semillero
         <span class="nav-led"></span>
       </button>
     </nav>
