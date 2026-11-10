@@ -789,17 +789,28 @@ loginForm.addEventListener('submit', async (e) => {
 
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
-  const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-  
-  if (error) {
-    loginError.textContent = "Correo o contraseña incorrectos.";
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    
+    if (error) {
+      console.error("Supabase Login Error:", error);
+      loginError.textContent = "Error: " + (error.message || "Credenciales incorrectas");
+      loginError.style.display = 'block';
+      loginText.style.display = 'block';
+      loginLoader.style.display = 'none';
+      document.getElementById('login-submit').disabled = false;
+    } else {
+      currentUser = data.user;
+      mostrarApp();
+    }
+  } catch (err) {
+    console.error("Network or script error:", err);
+    loginError.textContent = "Error de conexión con el servidor.";
     loginError.style.display = 'block';
     loginText.style.display = 'block';
     loginLoader.style.display = 'none';
     document.getElementById('login-submit').disabled = false;
-  } else {
-    currentUser = data.user;
-    mostrarApp();
   }
 });
 
@@ -1013,9 +1024,9 @@ function renderDashboard(){
 }
 
 function accionesHTML(tipo, i){
-  let html = '<button type="button" class="icon-btn" onclick="editItem('' + tipo + '', ' + i + ')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
+  let html = `<button type="button" class="icon-btn" onclick="editItem('${tipo}', ${i})" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>`;
   if (currentUser && (currentUser.email === ADMIN_EMAIL || currentUser.email === CLIENT_EMAIL)) {
-    html += '<button type="button" class="icon-btn danger" onclick="deleteItem('' + tipo + '', ' + i + ')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
+    html += `<button type="button" class="icon-btn danger" onclick="deleteItem('${tipo}', ${i})" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>`;
   }
   return html;
 }
