@@ -278,7 +278,7 @@
   .icon-btn:hover{background:var(--bg); color:var(--ink); border-color:#d1d5db;}
   .icon-btn.danger:hover{background:var(--danger-soft); color:var(--danger); border-color:var(--danger-soft);}
 
-  /* Cotizador & Zonas */
+  /* Cotizador */
   .calc-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); max-width: 700px; margin: 0 auto; }
   .calc-result { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 20px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
 
@@ -770,9 +770,17 @@ const loginLoader = document.getElementById('login-loader');
 
 async function checkSession() {
   if (!supabaseClient) { iniciarAppLocal(); return; }
-  const { data } = await supabaseClient.auth.getSession();
-  if (data.session) { currentUser = data.session.user; mostrarApp(); }
-  else { loginScreen.style.display = 'flex'; }
+  try {
+    const { data } = await supabaseClient.auth.getSession();
+    if (data && data.session) {
+      currentUser = data.session.user;
+      mostrarApp();
+    } else {
+      loginScreen.style.display = 'flex';
+    }
+  } catch(e) {
+    loginScreen.style.display = 'flex';
+  }
 }
 
 loginForm.addEventListener('submit', async (e) => {
@@ -789,7 +797,6 @@ loginForm.addEventListener('submit', async (e) => {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     
     if (error) {
-      console.error("Supabase Login Error:", error);
       loginError.textContent = "Error: " + (error.message || "Credenciales incorrectas");
       loginError.style.display = 'block';
       loginText.style.display = 'block';
@@ -800,8 +807,7 @@ loginForm.addEventListener('submit', async (e) => {
       mostrarApp();
     }
   } catch (err) {
-    console.error("Network or script error:", err);
-    loginError.textContent = "Error de conexión con el servidor.";
+    loginError.textContent = "Error de red al conectar con el servidor.";
     loginError.style.display = 'block';
     loginText.style.display = 'block';
     loginLoader.style.display = 'none';
@@ -837,9 +843,9 @@ function mostrarApp() {
   setTimeout(() => {
     loginScreen.style.display = 'none';
     appScreen.style.display = 'flex';
-    document.getElementById('user-email-display').textContent = currentUser.email;
+    if(currentUser) document.getElementById('user-email-display').textContent = currentUser.email;
     iniciarAppCompleta();
-  }, 300);
+  }, 200);
 }
 
 function iniciarAppLocal() {
@@ -868,7 +874,7 @@ function estadoVenc(dias){
 }
 function fmtMoneda(n){ return '$' + (Number(n)||0).toLocaleString('es-AR'); }
 
-let ideas = [], clientes = [], stock = [], ventas = [], equipos = [], sustitutos = [], taller = [];
+let ideas = [], clientes = [], stock = [], ventas = [], equipos = [], sustitutos = [];
 let isCloudOnline = false;
 let currentClienteId = null;
 
@@ -945,23 +951,27 @@ async function iniciarAppCompleta() {
 async function syncFromSupabase() {
   if (!supabaseClient) return;
   try {
-    const [resIdeas, resClientes, resStock, resVentas, resEquipos, resSust] = await Promise.all([
-      supabaseClient.from('ideas').select('*').order('created_at', { ascending: false }),
-      supabaseClient.from('clientes').select('*'),
-      supabaseClient.from('stock').select('*'),
-      supabaseClient.from('ventas').select('*').order('fecha', { ascending: false }),
-      supabaseClient.from('equipos').select('*'),
-      supabaseClient.from('sustitutos').select('*')
-    ]);
+    const resIdeas = await supabaseClient.from('ideas').select('*').order('created_at', { ascending: false });
+    const resClientes = await supabaseClient.from('clientes').select('*');
+    const resStock = await supabaseClient.from('stock').select('*');
+    const resVentas = await supabaseClient.from('ventas').select('*').order('fecha', { ascending: false });
+    const resEquipos = await supabaseClient.from('equipos').select('*');
 
     if (resIdeas.data) ideas = resIdeas.data;
     if (resClientes.data) clientes = resClientes.data;
     if (resStock.data) stock = resStock.data;
     if (resVentas.data) ventas = resVentas.data;
     if (resEquipos.data) equipos = resEquipos.data;
-    if (resSust.data) sustitutos = resSust.data;
+
+    try {
+      const resSust = await supabaseClient.from('sustitutos').select('*');
+      if (resSust && resSust.data) sustitutos = resSust.data;
+    } catch(e) {}
+
     isCloudOnline = true;
-  } catch (err) { isCloudOnline = false; }
+  } catch (err) {
+    isCloudOnline = false;
+  }
   updateSyncIndicator();
   renderAllViews();
 }
@@ -972,8 +982,6 @@ function updateSyncIndicator() {
   if (isCloudOnline) { dot.className = 'sync-dot online'; txt.textContent = 'Supabase Conectado'; }
   else { dot.className = 'sync-dot offline'; txt.textContent = 'Modo Desconectado'; }
 }
-
-function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
 
 function renderDashboard(){
   const vencidos = clientes.filter(c => diasDesdeHoy(c.vencimiento) < 0).length;
@@ -993,11 +1001,10 @@ function renderDashboard(){
 
   const needle = document.getElementById('gauge-needle');
   const pctEl = document.getElementById('gauge-pct');
-  const startTheta = 180, endTheta = 180 - (pct/100)*180;
-  
-  const rad = (startTheta + (endTheta - startTheta)) * Math.PI/180;
-  needle.setAttribute('x2', (90 + 52*Math.cos(rad)).toFixed(1));
-  needle.setAttribute('y2', (90 - 52*Math.sin(rad)).toFixed(1));
+  const angle = 180 - (pct / 100) * 180;
+  const rad = angle * Math.PI / 180;
+  needle.setAttribute('x2', (90 + 52 * Math.cos(rad)).toFixed(1));
+  needle.setAttribute('y2', (90 - 52 * Math.sin(rad)).toFixed(1));
   pctEl.textContent = pct + '%';
 
   const stateEl = document.getElementById('gauge-state');
@@ -1009,7 +1016,7 @@ function renderDashboard(){
   document.getElementById('venc-list').innerHTML = ordenados.slice(0,5).map(c=>{
     const d = diasDesdeHoy(c.vencimiento);
     const est = estadoVenc(d);
-    return '<div class="venc-row ' + est + '"><div class="cliente">' + c.nombre + '</div><div class="detalle">' + (c.matafuegos||0) + ' extintores · ' + (c.direccion||'') + '</div><div class="fecha">' + fmtFecha(c.vencimiento) + '</div></div>';
+    return '<div class="venc-row ' + est + '"><div class="cliente">' + (c.nombre || 'Sin nombre') + '</div><div class="detalle">' + (c.matafuegos||0) + ' extintores · ' + (c.direccion||'') + '</div><div class="fecha">' + fmtFecha(c.vencimiento) + '</div></div>';
   }).join('');
 
   const criticos = stock.filter(s=>s.cant < s.min);
@@ -1036,7 +1043,7 @@ function avisarWA(clienteId) {
 function verEquipos(clienteId) {
   currentClienteId = clienteId;
   const c = clientes.find(x => x.id === clienteId);
-  document.getElementById('equipos-cliente-nombre').textContent = 'Equipos de ' + c.nombre;
+  document.getElementById('equipos-cliente-nombre').textContent = 'Equipos de ' + (c ? c.nombre : '');
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
   document.getElementById('view-equipos').classList.add('active');
   renderEquipos();
@@ -1064,9 +1071,9 @@ function abrirCertificado() {
   const eq = equipos.filter(e => e.cliente_id === currentClienteId);
   document.getElementById('cert-table-body').innerHTML = eq.length ? eq.map(e => `
     <tr>
-      <td style="padding: 8px; border: 1px solid #ddd;"><b>#${e.num_chapa}</b></td>
-      <td style="padding: 8px; border: 1px solid #ddd;">${e.tipo}</td>
-      <td style="padding: 8px; border: 1px solid #ddd;">${e.capacidad} kg</td>
+      <td style="padding: 8px; border: 1px solid #ddd;"><b>#${e.num_chapa || '-'}</b></td>
+      <td style="padding: 8px; border: 1px solid #ddd;">${e.tipo || '-'}</td>
+      <td style="padding: 8px; border: 1px solid #ddd;">${e.capacidad || '-'} kg</td>
       <td style="padding: 8px; border: 1px solid #ddd;">${fmtFecha(e.vencimiento_carga)}</td>
       <td style="padding: 8px; border: 1px solid #ddd;">${fmtFecha(e.vencimiento_ph)}</td>
     </tr>
@@ -1088,8 +1095,8 @@ function renderEquipos() {
           <button type="button" class="icon-btn" onclick="verQR('${e.num_chapa}', '${e.tipo}', '${e.capacidad}')" title="Ver QR"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/></svg></button>
         </div>
       </td>
-      <td><span class="tag">${e.tipo}</span></td>
-      <td class="num">${e.capacidad} kg</td>
+      <td><span class="tag">${e.tipo || 'Polvo ABC'}</span></td>
+      <td class="num">${e.capacidad || 5} kg</td>
       <td class="num" style="font-size:12px;">${e.marbete || '—'}</td>
       <td class="num">${fmtFecha(e.vencimiento_carga)}</td>
       <td class="num" style="color:var(--ink-soft)">${fmtFecha(e.vencimiento_ph)}</td>
@@ -1100,11 +1107,13 @@ function renderEquipos() {
 }
 
 function renderClientes(){
-  const filtro = (document.getElementById('search-clientes').value || '').toLowerCase();
-  const zonaFiltro = document.getElementById('filter-zona').value;
+  const searchInput = document.getElementById('search-clientes');
+  const filtro = (searchInput ? searchInput.value : '').toLowerCase();
+  const filterZonaEl = document.getElementById('filter-zona');
+  const zonaFiltro = filterZonaEl ? filterZonaEl.value : '';
   
   document.getElementById('clientes-body').innerHTML = clientes.filter(c=>{
-    const matchTxt = c.nombre.toLowerCase().includes(filtro);
+    const matchTxt = (c.nombre || '').toLowerCase().includes(filtro);
     const matchZona = !zonaFiltro || c.zona === zonaFiltro;
     return matchTxt && matchZona;
   }).map(c=>{
@@ -1117,7 +1126,7 @@ function renderClientes(){
     let eqBtn = `<button type="button" class="icon-btn" onclick="verEquipos(${c.id})" title="Gestionar Equipos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13h4"/><path d="M10 17h4"/><path d="M14 9H8"/></svg></button>`;
 
     return `<tr>
-      <td><b>${c.nombre}</b><br><span style="font-size:11px;color:var(--ink-soft)">${c.telefono||'Sin teléfono'}</span></td>
+      <td><b>${c.nombre || 'Sin nombre'}</b><br><span style="font-size:11px;color:var(--ink-soft)">${c.telefono||'Sin teléfono'}</span></td>
       <td style="color:var(--ink-soft)">${c.direccion||'-'}<br><span class="tag">${c.zona || 'General'}</span></td>
       <td class="num">${cantReal}</td>
       <td class="num">${fmtFecha(c.vencimiento)}</td>
@@ -1130,15 +1139,14 @@ function renderClientes(){
 function renderTaller() {
   document.getElementById('sustitutos-body').innerHTML = sustitutos.length ? sustitutos.map(s => `
     <tr>
-      <td><b>#${s.num_chapa}</b></td>
-      <td>${s.cliente_nombre}</td>
+      <td><b>#${s.num_chapa || '-'}</b></td>
+      <td>${s.cliente_nombre || '-'}</td>
       <td class="num">${fmtFecha(s.fecha_prestamo)}</td>
       <td style="color:var(--ink-soft)">${s.motivo || 'Préstamo estándar'}</td>
       <td><div class="row-actions">${accionesHTML('sustitutos', sustitutos.indexOf(s))}</div></td>
     </tr>
   `).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-soft);">No hay cilindros sustitutos en comodato actualmente.</td></tr>';
 
-  // Taller orders preview
   document.getElementById('taller-body').innerHTML = `
     <tr>
       <td><b>#ORD-1042</b></td>
@@ -1146,7 +1154,7 @@ function renderTaller() {
       <td>2x Polvo ABC 5kg</td>
       <td><span class="pill proximo">En Taller (Carga)</span></td>
       <td style="font-size:12px;">Marbete Azul #4120</td>
-      <td><div class="row-actions"><button class="icon-btn" title="Avanzar Estado"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
+      <td><div class="row-actions"><button class="icon-btn" title="Detalle"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
     </tr>
     <tr>
       <td><b>#ORD-1045</b></td>
@@ -1154,17 +1162,18 @@ function renderTaller() {
       <td>1x CO2 3.5kg</td>
       <td><span class="pill ok">Listo para Entrega</span></td>
       <td style="font-size:12px;">PH Válida hasta 2028</td>
-      <td><div class="row-actions"><button class="icon-btn" title="Avanzar Estado"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
+      <td><div class="row-actions"><button class="icon-btn" title="Detalle"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
     </tr>
   `;
 }
 
 function renderRecorridos() {
-  const zonaSel = document.getElementById('recorrido-zona-select').value;
+  const selectEl = document.getElementById('recorrido-zona-select');
+  const zonaSel = selectEl ? selectEl.value : 'Norte';
   const filtrados = clientes.filter(c => c.zona === zonaSel);
   document.getElementById('recorridos-body').innerHTML = filtrados.length ? filtrados.map(c => `
     <tr>
-      <td><b>${c.nombre}</b></td>
+      <td><b>${c.nombre || 'Sin nombre'}</b></td>
       <td style="color:var(--ink-soft)">${c.direccion || 'Sin dirección'}</td>
       <td>${c.telefono || '—'}</td>
       <td class="num">${fmtFecha(c.vencimiento)}</td>
@@ -1192,26 +1201,14 @@ function calcularPresupuesto() {
   if(tipo === 'venta') textoServicio = 'Venta de Equipo Nuevo Homologado';
   if(tipo === 'repuesto') textoServicio = 'Repuesto / Accesorio';
 
-  const mensaje = `🔥 *Friera Multi-Rubros* - Presupuesto Oficial
-
-` +
-    `Estimado cliente, le detallamos nuestra cotización:
-
-` +
-    `• *Servicio:* ${textoServicio}
-` +
-    `• *Especificación:* ${agente}
-` +
-    `• *Cantidad:* ${cant} unidad(es)
-` +
-    (obs ? `• *Nota:* ${obs}
-
-` : '
-') +
-    `💰 *Total Estimado:* $${total.toLocaleString('es-AR')}
-
-` +
-    `Quedamos a su disposición para coordinar retiros o entregas en el local. ¡Muchas gracias!`;
+  const mensaje = "🔥 *Friera Multi-Rubros* - Presupuesto Oficial\n\n" +
+    "Estimado cliente, le detallamos nuestra cotización:\n\n" +
+    "• *Servicio:* " + textoServicio + "\n" +
+    "• *Especificación:* " + agente + "\n" +
+    "• *Cantidad:* " + cant + " unidad(es)\n" +
+    (obs ? ("• *Nota:* " + obs + "\n\n") : "\n") +
+    "💰 *Total Estimado:* $" + total.toLocaleString('es-AR') + "\n\n" +
+    "Quedamos a su disposición para coordinar retiros o entregas en el local. ¡Muchas gracias!";
 
   document.getElementById('cot-output').textContent = mensaje;
 }
@@ -1223,14 +1220,14 @@ function enviarCotizacionWA() {
 
 function renderStock(filtro=''){
   const f = filtro.toLowerCase();
-  document.getElementById('stock-body').innerHTML = stock.filter(s=>s.producto.toLowerCase().includes(f)).map(s=>{
+  document.getElementById('stock-body').innerHTML = stock.filter(s=>(s.producto||'').toLowerCase().includes(f)).map(s=>{
     return `<tr><td><b>${s.producto}</b></td><td><span class="tag">${s.tipo}</span></td><td class="num">${s.capacidad||'-'}</td><td class="num ${s.cant<s.min?'stock-low':''}">${s.cant}</td><td class="num">${fmtMoneda(s.precio)}</td><td><div class="row-actions">${accionesHTML('stock', stock.indexOf(s))}</div></td></tr>`;
   }).join('');
 }
 
 function renderVentas(filtro=''){
   const f = filtro.toLowerCase();
-  document.getElementById('ventas-body').innerHTML = ventas.filter(v=>v.cliente.toLowerCase().includes(f)).map(v=>{
+  document.getElementById('ventas-body').innerHTML = ventas.filter(v=>(v.cliente||'').toLowerCase().includes(f)).map(v=>{
     return `<tr><td>${fmtFecha(v.fecha)}</td><td><b>${v.cliente}</b></td><td style="color:var(--ink-soft)">${v.detalle||'-'}</td><td class="num">${fmtMoneda(v.total)}</td><td><div class="row-actions">${accionesHTML('ventas', ventas.indexOf(v))}</div></td></tr>`;
   }).join('');
 }
@@ -1368,15 +1365,6 @@ async function deleteItem(tipo, index){
   const el = document.getElementById('search-'+k);
   if(el) el.addEventListener('input', e=>entidades[k].renderFn(e.target.value));
 });
-
-let realtimeDebounce = null;
-function setupRealtimeSubscription() {
-  if (!supabaseClient) return;
-  supabaseClient.channel('db-changes').on('postgres_changes', { event: '*', schema: 'public' }, () => {
-    clearTimeout(realtimeDebounce);
-    realtimeDebounce = setTimeout(() => syncFromSupabase(), 300);
-  }).subscribe();
-}
 </script>
 </body>
 </html>
