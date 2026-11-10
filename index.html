@@ -571,9 +571,12 @@
         <div class="seed-header-box">
           <div>
             <div class="seed-header-title">Control de Taller & Equipos Sustitutos (Comodatos)</div>
-            <div class="seed-header-sub">Seguimiento de órdenes de servicio y préstamos temporales de cilindros.</div>
+            <div class="seed-header-sub">Seguimiento en tiempo real de órdenes de servicio y cilindros de cortesía en la calle.</div>
           </div>
-          <button class="btn" onclick="openModal('sustitutos')">+ Nuevo Préstamo / Comodato</button>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn ghost" onclick="openModal('taller')">+ Nueva Orden de Taller</button>
+            <button class="btn" onclick="openModal('sustitutos')">+ Nuevo Sustituto (Comodato)</button>
+          </div>
         </div>
         <div class="section-title">Equipos sustitutos entregados en la calle</div>
         <div class="table-wrap" style="margin-bottom: 32px;">
@@ -586,7 +589,7 @@
         <div class="section-title">Circuito de Órdenes en Taller</div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nº Orden</th><th>Cliente</th><th>Equipo / Detalle</th><th>Estado Actual</th><th>Marbete / PH</th><th style="text-align:right">Acciones</th></tr></thead>
+            <thead><tr><th>Nº Orden</th><th>Cliente</th><th>Equipo / Detalle</th><th>Estado Actual</th><th>Marbete / PH</th><th style="text-align:center">Avanzar Estado</th><th style="text-align:right">Acciones</th></tr></thead>
             <tbody id="taller-body"></tbody>
           </table>
         </div>
@@ -602,6 +605,7 @@
         </div>
         <div class="toolbar">
           <select class="filter-select" id="recorrido-zona-select" onchange="renderRecorridos()">
+            <option value="">Todas las Zonas / Barrios</option>
             <option value="Norte">Zona Norte</option>
             <option value="Centro">Zona Centro</option>
             <option value="Sur">Zona Sur</option>
@@ -610,7 +614,7 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Cliente</th><th>Dirección</th><th>Teléfono</th><th>Próx. Vencimiento</th><th style="text-align:center">Acción Rápida</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Zona</th><th>Dirección</th><th>Teléfono</th><th>Próx. Vencimiento</th><th style="text-align:center">Acción Rápida</th></tr></thead>
             <tbody id="recorridos-body"></tbody>
           </table>
         </div>
@@ -623,15 +627,20 @@
           <div class="seed-header-sub" style="margin-bottom: 20px;">Armá un presupuesto detallado de recarga o venta y pasáselo al cliente en un toque.</div>
           
           <div class="field">
-            <label>Tipo de Servicio / Operación</label>
-            <select id="cot-tipo" onchange="calcularPresupuesto()">
-              <option value="recarga">Recarga de Matafuego (Anual)</option>
-              <option value="ph">Prueba Hidráulica (PH - 5 Años) + Recarga</option>
-              <option value="venta">Venta de Equipo Nuevo (Homologado)</option>
-              <option value="repuesto">Repuestos / Accesorios (Soporte, Manguera)</option>
-            </select>
+            <label>Cliente (Opcional)</label>
+            <input type="text" id="cot-cliente" placeholder="Nombre del cliente o comercio" oninput="calcularPresupuesto()">
           </div>
+
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="field">
+              <label>Tipo de Servicio / Operación</label>
+              <select id="cot-tipo" onchange="alCambiarTipoCotizador()">
+                <option value="recarga">Recarga de Matafuego (Anual)</option>
+                <option value="ph">Prueba Hidráulica (PH - 5 Años) + Recarga</option>
+                <option value="venta">Venta de Equipo Nuevo (Homologado)</option>
+                <option value="repuesto">Repuestos / Accesorios (Soporte, Manguera)</option>
+              </select>
+            </div>
             <div class="field">
               <label>Agente y Capacidad</label>
               <select id="cot-agente" onchange="calcularPresupuesto()">
@@ -644,11 +653,19 @@
                 <option value="Agua 10L">Agua con AFFF 10 L</option>
               </select>
             </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
             <div class="field">
               <label>Cantidad de Equipos</label>
               <input type="text" inputmode="numeric" id="cot-cant" value="1" oninput="calcularPresupuesto()">
             </div>
+            <div class="field">
+              <label>Precio Unitario ($)</label>
+              <input type="text" inputmode="decimal" id="cot-precio" value="4.500" oninput="calcularPresupuesto()">
+            </div>
           </div>
+
           <div class="field">
             <label>Observaciones adicionales (Opcional)</label>
             <input type="text" id="cot-obs" placeholder="Ej: Retiro y entrega sin cargo en el local" oninput="calcularPresupuesto()">
@@ -979,7 +996,7 @@ function confirmarSincronizacion() {
   }, 400);
 }
 
-// Parser inteligente para números con puntos de miles o decimales argentinos
+// Parser inteligente para números en formato argentino
 function parseNumeroAR(val) {
   if (val === null || val === undefined) return 0;
   let str = String(val).trim().replace('$', '').replace(/\s/g, '');
@@ -1020,7 +1037,7 @@ function estadoVenc(dias){
 }
 function fmtMoneda(n){ return '$' + (Number(n)||0).toLocaleString('es-AR'); }
 
-let ideas = [], clientes = [], stock = [], ventas = [], equipos = [], sustitutos = [];
+let ideas = [], clientes = [], stock = [], ventas = [], equipos = [], sustitutos = [], taller = [];
 let isCloudOnline = false;
 let currentClienteId = null;
 
@@ -1050,12 +1067,28 @@ const entidades = {
     ]
   },
   sustitutos: {
-    titulo:'Préstamo de Sustituto', get array(){ return sustitutos; }, set array(v){ sustitutos = v; }, view:'taller', renderFn: ()=>renderTaller(),
+    titulo:'Sustituto en Comodato', get array(){ return sustitutos; }, set array(v){ sustitutos = v; }, view:'taller', renderFn: ()=>renderTaller(),
     campos:[
-      {key:'num_chapa', label:'Nº Chapa Cilindro Sustituto en Préstamo', type:'text'},
+      {key:'num_chapa', label:'Nº Chapa Cilindro Sustituto', type:'text'},
       {key:'cliente_nombre', label:'Cliente que lo recibe', type:'text'},
       {key:'fecha_prestamo', label:'Fecha de Préstamo', type:'date'},
       {key:'motivo', label:'Equipo retirado para taller / Motivo', type:'text'}
+    ]
+  },
+  taller: {
+    titulo:'Orden de Taller', get array(){ return taller; }, set array(v){ taller = v; }, view:'taller', renderFn: ()=>renderTaller(),
+    campos:[
+      {key:'num_orden', label:'Nº de Orden (ej: #ORD-1045)', type:'text'},
+      {key:'cliente', label:'Cliente / Razón Social', type:'text'},
+      {key:'detalle', label:'Equipos / Detalle (ej: 2x Polvo ABC 5kg)', type:'text'},
+      {key:'estado', label:'Estado en Taller', type:'select', options:[
+        {val:'Retirado', label:'Retirado de local'},
+        {val:'En Taller (Carga)', label:'En Taller (Carga / Desarme)'},
+        {val:'En Prueba Hidráulica', label:'En Prueba Hidráulica (PH)'},
+        {val:'Listo para Entrega', label:'Listo para Entrega'},
+        {val:'Entregado', label:'Entregado y Facturado'}
+      ]},
+      {key:'marbete_ph', label:'Marbete / Venc. PH colocado', type:'text'}
     ]
   },
   stock: {
@@ -1114,6 +1147,11 @@ async function syncFromSupabase() {
       if (resSust && resSust.data) sustitutos = resSust.data;
     } catch(e) {}
 
+    try {
+      const resTaller = await supabaseClient.from('taller').select('*');
+      if (resTaller && resTaller.data) taller = resTaller.data;
+    } catch(e) {}
+
     isCloudOnline = true;
   } catch (err) {
     isCloudOnline = false;
@@ -1149,14 +1187,18 @@ function renderDashboard(){
   const pctEl = document.getElementById('gauge-pct');
   const angle = 180 - (pct / 100) * 180;
   const rad = angle * Math.PI / 180;
-  needle.setAttribute('x2', (90 + 52 * Math.cos(rad)).toFixed(1));
-  needle.setAttribute('y2', (90 - 52 * Math.sin(rad)).toFixed(1));
-  pctEl.textContent = pct + '%';
+  if(needle) {
+    needle.setAttribute('x2', (90 + 52 * Math.cos(rad)).toFixed(1));
+    needle.setAttribute('y2', (90 - 52 * Math.sin(rad)).toFixed(1));
+  }
+  if(pctEl) pctEl.textContent = pct + '%';
 
   const stateEl = document.getElementById('gauge-state');
-  if(pct >= 70){ stateEl.textContent = 'Mayoría al día'; stateEl.className = 'gauge-state good'; }
-  else if(pct >= 40){ stateEl.textContent = 'Atención moderada'; stateEl.className = 'gauge-state mid'; }
-  else { stateEl.textContent = 'Requiere atención'; stateEl.className = 'gauge-state bad'; }
+  if(stateEl) {
+    if(pct >= 70){ stateEl.textContent = 'Mayoría al día'; stateEl.className = 'gauge-state good'; }
+    else if(pct >= 40){ stateEl.textContent = 'Atención moderada'; stateEl.className = 'gauge-state mid'; }
+    else { stateEl.textContent = 'Requiere atención'; stateEl.className = 'gauge-state bad'; }
+  }
 
   const ordenados = [...clientes].sort((a,b)=>diasDesdeHoy(a.vencimiento)-diasDesdeHoy(b.vencimiento));
   document.getElementById('venc-list').innerHTML = ordenados.slice(0,5).map(c=>{
@@ -1202,7 +1244,7 @@ function cerrarEquipos() {
 
 function verQR(chapa, tipo, cap) {
   document.getElementById('qr-modal').classList.add('open');
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Friera-Matafuego-Chapa-${chapa}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Friera-Matafuego-Chapa-${encodeURIComponent(chapa)}`;
   document.getElementById('qr-img-box').innerHTML = `<img src="${qrUrl}" alt="QR Code" style="border-radius:8px; border:1px solid #ddd;">`;
   document.getElementById('qr-info-text').innerHTML = `<b>Chapa: #${chapa}</b><br>${tipo} - ${cap} kg<br><span style="color:var(--primary); font-weight:600;">Homologado por Friera Multi-Rubros</span>`;
 }
@@ -1293,53 +1335,76 @@ function renderTaller() {
     </tr>
   `).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-soft);">No hay cilindros sustitutos en comodato actualmente.</td></tr>';
 
-  document.getElementById('taller-body').innerHTML = `
-    <tr>
-      <td><b>#ORD-1042</b></td>
-      <td>Supermercado Don Juan</td>
-      <td>2x Polvo ABC 5kg</td>
-      <td><span class="pill proximo">En Taller (Carga)</span></td>
-      <td style="font-size:12px;">Marbete Azul #4120</td>
-      <td><div class="row-actions"><button class="icon-btn" title="Detalle"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
-    </tr>
-    <tr>
-      <td><b>#ORD-1045</b></td>
-      <td>Ferretería Central</td>
-      <td>1x CO2 3.5kg</td>
-      <td><span class="pill ok">Listo para Entrega</span></td>
-      <td style="font-size:12px;">PH Válida hasta 2028</td>
-      <td><div class="row-actions"><button class="icon-btn" title="Detalle"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
-    </tr>
-  `;
+  document.getElementById('taller-body').innerHTML = taller.length ? taller.map((ord, idx) => {
+    let pillClass = ord.estado === 'Listo para Entrega' || ord.estado === 'Entregado' ? 'ok' : ord.estado === 'Retirado' ? 'vencido' : 'proximo';
+    return `
+      <tr>
+        <td><b>${ord.num_orden || ('#ORD-' + (idx + 101))}</b></td>
+        <td><b>${ord.cliente || 'Cliente no asignado'}</b></td>
+        <td>${ord.detalle || 'Recarga / Mantenimiento'}</td>
+        <td><span class="pill ${pillClass}">${ord.estado || 'En Taller'}</span></td>
+        <td style="font-size:12px; color:var(--ink-soft);">${ord.marbete_ph || 'Pendiente'}</td>
+        <td style="text-align:center;">
+          <button class="icon-btn" onclick="avanzarEstadoTaller(${idx})" title="Avanzar etapa">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </td>
+        <td><div class="row-actions">${accionesHTML('taller', idx)}</div></td>
+      </tr>
+    `;
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--ink-soft);">No hay órdenes activas en el taller. Tocá "+ Nueva Orden de Taller" para ingresar una.</td></tr>';
+}
+
+async function avanzarEstadoTaller(index) {
+  const etapas = ['Retirado', 'En Taller (Carga)', 'En Prueba Hidráulica', 'Listo para Entrega', 'Entregado'];
+  const actual = taller[index].estado || 'Retirado';
+  let nextIdx = etapas.indexOf(actual) + 1;
+  if(nextIdx >= etapas.length) nextIdx = 0;
+  taller[index].estado = etapas[nextIdx];
+  renderTaller();
+  setSavingStatus(true);
+  if(supabaseClient && taller[index].id) {
+    try { await supabaseClient.from('taller').update({ estado: taller[index].estado }).eq('id', taller[index].id); } catch(e){}
+  }
+  setSavingStatus(false);
+  showToast(`Orden #${taller[index].num_orden || ''} actualizada a: ${taller[index].estado}`);
 }
 
 function renderRecorridos() {
   const selectEl = document.getElementById('recorrido-zona-select');
-  const zonaSel = selectEl ? selectEl.value : 'Norte';
-  const filtrados = clientes.filter(c => c.zona === zonaSel);
+  const zonaSel = selectEl ? selectEl.value : '';
+  const filtrados = clientes.filter(c => !zonaSel || (c.zona || 'General') === zonaSel);
   document.getElementById('recorridos-body').innerHTML = filtrados.length ? filtrados.map(c => `
     <tr>
       <td><b>${c.nombre || 'Sin nombre'}</b></td>
+      <td><span class="tag">${c.zona || 'General'}</span></td>
       <td style="color:var(--ink-soft)">${c.direccion || 'Sin dirección'}</td>
       <td>${c.telefono || '—'}</td>
       <td class="num">${fmtFecha(c.vencimiento)}</td>
       <td style="text-align:center;">
-        <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="avisarWA(${c.id})">Avisar por WhatsApp</button>
+        <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="avisarWA(${c.id})">Avisar WhatsApp</button>
       </td>
     </tr>
-  `).join('') : '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--ink-soft);">No hay clientes registrados en esta zona.</td></tr>';
+  `).join('') : '<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--ink-soft);">No hay clientes registrados para esta zona.</td></tr>';
+}
+
+function alCambiarTipoCotizador() {
+  const tipo = document.getElementById('cot-tipo').value;
+  const precioInput = document.getElementById('cot-precio');
+  if(tipo === 'recarga') precioInput.value = '4.500';
+  else if(tipo === 'ph') precioInput.value = '12.000';
+  else if(tipo === 'venta') precioInput.value = '32.000';
+  else if(tipo === 'repuesto') precioInput.value = '2.500';
+  calcularPresupuesto();
 }
 
 function calcularPresupuesto() {
+  const cliente = (document.getElementById('cot-cliente').value || '').trim();
   const tipo = document.getElementById('cot-tipo').value;
   const agente = document.getElementById('cot-agente').value;
   const cant = parseNumeroAR(document.getElementById('cot-cant').value) || 1;
+  const precioUnitario = parseNumeroAR(document.getElementById('cot-precio').value) || 0;
   const obs = document.getElementById('cot-obs').value;
-
-  let precioUnitario = 4500;
-  if(tipo === 'ph') precioUnitario = 12000;
-  if(tipo === 'venta') precioUnitario = 32000;
-  if(tipo === 'repuesto') precioUnitario = 2500;
 
   const total = precioUnitario * cant;
   let textoServicio = 'Recarga Anual';
@@ -1347,11 +1412,14 @@ function calcularPresupuesto() {
   if(tipo === 'venta') textoServicio = 'Venta de Equipo Nuevo Homologado';
   if(tipo === 'repuesto') textoServicio = 'Repuesto / Accesorio';
 
+  const saludo = cliente ? `Estimado/a *${cliente}*, le detallamos nuestra cotización:` : 'Estimado cliente, le detallamos nuestra cotización:';
+
   const mensaje = "🔥 *Friera Multi-Rubros* - Presupuesto Oficial\n\n" +
-    "Estimado cliente, le detallamos nuestra cotización:\n\n" +
+    saludo + "\n\n" +
     "• *Servicio:* " + textoServicio + "\n" +
     "• *Especificación:* " + agente + "\n" +
     "• *Cantidad:* " + cant + " unidad(es)\n" +
+    "• *Precio unitario:* $" + precioUnitario.toLocaleString('es-AR') + "\n" +
     (obs ? ("• *Nota:* " + obs + "\n\n") : "\n") +
     "💰 *Total Estimado:* $" + total.toLocaleString('es-AR') + "\n\n" +
     "Quedamos a su disposición para coordinar retiros o entregas en el local. ¡Muchas gracias!";
@@ -1360,20 +1428,17 @@ function calcularPresupuesto() {
 }
 
 async function guardarCotizacionEnVentas() {
+  const cliente = (document.getElementById('cot-cliente').value || '').trim() || 'Presupuesto Mostrador';
   const tipo = document.getElementById('cot-tipo').value;
   const agente = document.getElementById('cot-agente').value;
   const cant = parseNumeroAR(document.getElementById('cot-cant').value) || 1;
+  const precioUnitario = parseNumeroAR(document.getElementById('cot-precio').value) || 0;
   const obs = document.getElementById('cot-obs').value;
-
-  let precioUnitario = 4500;
-  if(tipo === 'ph') precioUnitario = 12000;
-  if(tipo === 'venta') precioUnitario = 32000;
-  if(tipo === 'repuesto') precioUnitario = 2500;
   const total = precioUnitario * cant;
 
   const nuevaVenta = {
     fecha: new Date().toISOString().split('T')[0],
-    cliente: 'Presupuesto Mostrador',
+    cliente: cliente,
     detalle: `${cant}x ${agente} (${tipo.toUpperCase()})${obs ? ' · ' + obs : ''}`,
     total: total
   };
@@ -1390,7 +1455,7 @@ async function guardarCotizacionEnVentas() {
     } catch(err){}
   }
   setSavingStatus(false);
-  showToast("¡Presupuesto registrado con éxito en la sección Ventas!");
+  showToast(`¡Presupuesto de ${cliente} guardado en Ventas!`);
 }
 
 function enviarCotizacionWA() {
@@ -1485,9 +1550,16 @@ function openModal(tipo, index){
 }
 
 function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
+
 document.getElementById('btn-add').addEventListener('click', ()=>{
   if(currentView==='clientes') openModal('clientes');
-  else if(currentView==='taller') openModal('sustitutos');
+  else if(currentView==='taller') {
+    if(confirm('¿Deseas agregar una Orden de Taller? (Aceptar para Orden, Cancelar para Sustituto en Comodato)')) {
+      openModal('taller');
+    } else {
+      openModal('sustitutos');
+    }
+  }
   else if(currentView==='stock') openModal('stock');
   else if(currentView==='ventas') openModal('ventas');
   else if(currentView==='ideas') openModal('ideas');
