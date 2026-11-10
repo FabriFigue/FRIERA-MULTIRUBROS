@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Friera Multi-Rubros · Panel de Gestión</title>
+<title>Friera Multi-Rubros · Panel de Gestión Profesional</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <!-- Supabase JS Client -->
@@ -45,7 +45,7 @@
   }
   h1, h2, h3 { font-weight: 600; color: var(--ink); }
 
-  /* ---------------- PANTALLA DE LOGIN ---------------- */
+  /* LOGIN */
   #login-screen{
     position:fixed;inset:0;background:var(--bg);z-index:9999;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -58,13 +58,10 @@
     border: 1px solid var(--border);
     text-align:center;
   }
-  .login-logo-container {
-    display: flex; justify-content: center; margin-bottom: 24px;
-  }
+  .login-logo-container { display: flex; justify-content: center; margin-bottom: 24px; }
   .login-logo-container img { max-width: 240px; width: 100%; height: auto; display: block; }
   .login-title{font-size:20px;font-weight:700;margin-bottom:6px;}
   .login-sub{font-size:14px;color:var(--ink-soft);margin-bottom:32px;}
-  
   .login-form .field{text-align:left;margin-bottom:20px;}
   .login-form .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;}
   .login-form .field input{
@@ -81,7 +78,6 @@
     transition:all 0.2s ease;
   }
   .login-btn:hover{background:var(--primary-hover); transform: translateY(-1px);}
-  .login-btn:active{transform:translateY(1px);}
   #login-error{
     color:var(--danger); background: var(--danger-soft); padding: 10px; border-radius: 6px;
     font-size:13px;font-weight:500;margin-top:16px;display:none; text-align: left;
@@ -93,9 +89,8 @@
   }
   @keyframes spin{to{transform:rotate(360deg);}}
 
-  /* ---------------- PANTALLA PRINCIPAL (APP) ---------------- */
+  /* APP SCREEN & SIDEBAR */
   #app-screen{display:none;flex:1;width:100%;height:100%; overflow: hidden;}
-
   .sidebar{
     width:260px;flex-shrink:0; background:var(--sidebar-bg); color:var(--ink-sidebar);
     display:flex;flex-direction:column;padding:24px 20px;
@@ -103,17 +98,15 @@
   }
   .brand{
     display:flex;flex-direction:column;align-items:flex-start;gap:12px;
-    padding:0 4px 28px 4px; border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:24px;
+    padding:0 4px 28px 4px; border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:20px;
   }
-  .brand img {
-    width: 100%; max-width: 200px; height: auto; display: block; margin: 0 auto;
-  }
+  .brand img { width: 100%; max-width: 200px; height: auto; display: block; margin: 0 auto; }
   .brand-sub{font-size:12px;font-weight:500; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.4);}
 
-  nav{display:flex;flex-direction:column;gap:6px;}
+  nav{display:flex;flex-direction:column;gap:4px; overflow-y:auto; flex:1; padding-right:2px;}
   .nav-item{
-    display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:8px;
-    font-size:14px;font-weight:500;color:var(--ink-sidebar);
+    display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:8px;
+    font-size:13px;font-weight:500;color:var(--ink-sidebar);
     cursor:pointer;border:none;background:transparent;text-align:left;width:100%;
     transition:all 0.2s ease;
   }
@@ -122,28 +115,33 @@
   .nav-item:hover svg{opacity: 1;}
   .nav-item.active{background:var(--primary);color:#fff;}
   .nav-item.active svg{opacity:1;}
-  
   .nav-led{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0;background:rgba(255,255,255,0.2);}
   .nav-item.active .nav-led{background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,0.5);}
 
   .sidebar-foot{
-    margin-top:auto;padding:20px 4px 0 4px;border-top:1px solid rgba(255,255,255,0.08);
-    font-size:12px;display:flex;flex-direction:column;gap:12px;
+    margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08);
+    font-size:12px;display:flex;flex-direction:column;gap:10px;
   }
   .user-info{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .user-email{font-weight:600;color:var(--ink-sidebar-active);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sidebar-actions { display: flex; gap: 6px; }
+  .btn-foot{
+    background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--ink-sidebar);
+    padding:6px 10px;border-radius:6px;font-size:11px;font-weight: 600;cursor:pointer;transition:all .2s;
+    flex: 1; text-align: center;
+  }
   .btn-foot:hover{background:rgba(255,255,255,0.1); color:#fff;}
   .btn-foot.danger:hover{background:var(--danger);border-color:var(--danger);color:#fff;}
-
   .sync-indicator{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:rgba(255,255,255,0.5);}
   .sync-dot{width:8px;height:8px;border-radius:50%;background:var(--warning);}
   .sync-dot.online{background:var(--success);box-shadow:0 0 8px var(--success);}
   .sync-dot.offline{background:var(--ink-soft);}
 
+  /* MAIN AREA */
   .main{flex:1;display:flex;flex-direction:column;min-width:0;height:100%; background: var(--bg);}
   .topbar{
     display:flex;align-items:center;justify-content:space-between;
-    padding:24px 36px;background:var(--panel);border-bottom:1px solid var(--border);
+    padding:20px 36px;background:var(--panel);border-bottom:1px solid var(--border);
     box-shadow: 0 1px 2px rgba(0,0,0,0.02);
   }
   .topbar h1{font-size:22px;font-weight:700;letter-spacing:-0.5px;}
@@ -157,7 +155,6 @@
     transition:all 0.2s ease;
   }
   .btn:hover{background:var(--primary-hover); transform: translateY(-1px); box-shadow:0 4px 6px rgba(22, 163, 74, 0.3);}
-  .btn:active{transform:translateY(0);box-shadow:none;}
   .btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,0.05);}
   .btn.ghost:hover{background:var(--panel-hover); border-color: #d1d5db;}
 
@@ -165,6 +162,7 @@
   .view{display:none;}
   .view.active{display:block;}
 
+  /* PANELS & TABLES */
   .top-panels{display:grid;grid-template-columns:300px 1fr;gap:24px;margin-bottom:32px;}
   .gauge-card{
     background:var(--panel);border:1px solid var(--border);border-radius:12px;
@@ -173,7 +171,7 @@
   }
   .gauge-card svg{width:100%;height:auto;max-width:180px;}
   .gauge-pct{font-size:32px;font-weight:700;line-height:1;margin-top:12px;}
-  .gauge-label{font-size:12px;font-weight: 500; color:var(--ink-soft);text-align:center;margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;}
+  .gauge-label{font-size:12px;font-weight:500;color:var(--ink-soft);text-align:center;margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;}
   .gauge-state{font-size:12px;font-weight:700;margin-top:12px;padding:4px 12px;border-radius:99px;}
   .gauge-state.good{background:var(--success-soft);color:#047857;}
   .gauge-state.mid{background:var(--warning-soft);color:#b45309;}
@@ -187,7 +185,7 @@
   }
   .stat.warn{border-left: 4px solid var(--danger);}
   .stat .num{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums; letter-spacing: -0.5px;}
-  .stat .label{font-size:13px;font-weight: 500;color:var(--ink-soft);margin-top:4px;}
+  .stat .label{font-size:13px;font-weight:500;color:var(--ink-soft);margin-top:4px;}
   .stat.warn .num{color:var(--danger);}
 
   .section-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
@@ -204,12 +202,12 @@
   .venc-row .detalle{font-size:13px;color:var(--ink-soft);flex:1.5;}
   .venc-row .fecha{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;width:120px;text-align:right;}
   
-  .pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-align:center;flex-shrink:0;letter-spacing: 0.2px;}
+  .pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;text-align:center;flex-shrink:0;letter-spacing:0.2px;}
   .pill.vencido{background:var(--danger-soft);color:#b91c1c;}
   .pill.proximo{background:var(--warning-soft);color:#b45309;}
   .pill.ok{background:var(--success-soft);color:#047857;}
 
-  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border);}
+  .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); background: var(--panel);}
   table{width:100%;border-collapse:collapse;background:var(--panel);}
   thead th{text-align:left;font-size:12px;font-weight:600;color:var(--ink-soft);padding:14px 20px;border-bottom:1px solid var(--border);background:#f8fafc; text-transform: uppercase; letter-spacing: 0.5px;}
   tbody td{padding:16px 20px;font-size:14px;border-bottom:1px solid var(--border); color: var(--ink);}
@@ -219,12 +217,12 @@
   td.stock-low{color:var(--danger);font-weight:700;}
 
   .toolbar{display:flex;gap:12px;margin-bottom:20px;align-items:center;flex-wrap:wrap;}
-  input.search{
-    flex:1;min-width:260px;max-width:360px;padding:10px 16px;border:1px solid var(--border);
+  input.search, select.filter-select{
+    flex:1;min-width:240px;max-width:320px;padding:10px 16px;border:1px solid var(--border);
     border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;background:#fff;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s;
   }
-  input.search:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
+  input.search:focus, select.filter-select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);}
   .tag{display:inline-block;font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;background:var(--bg);color:var(--ink-soft); border: 1px solid var(--border);}
 
   /* Semillero */
@@ -236,8 +234,7 @@
   .seed-header-title{font-size:18px;font-weight:700;}
   .seed-header-sub{font-size:14px;color:var(--ink-soft);margin-top:6px;}
   .seed-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:20px;}
-  .seed-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;}
-  .seed-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+  .seed-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,0.05);}
   .seed-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
   .seed-badge{font-size:11px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:99px; letter-spacing: 0.5px;}
   .seed-badge.rubro{background:#fef3c7;color:#b45309;}
@@ -247,8 +244,7 @@
   .seed-title{font-size:16px;font-weight:700;line-height:1.4;margin-bottom:8px;color:var(--ink);}
   .seed-text{font-size:14px;color:var(--ink-soft);line-height:1.6;flex:1;white-space:pre-wrap;}
   .seed-meta{display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid var(--bg);font-size:12px;color:var(--ink-soft);}
-  
-  .seed-status{cursor:pointer;font-weight:600;padding:4px 10px;border-radius:6px;border:none;font-size:12px; transition: all 0.2s;}
+  .seed-status{cursor:pointer;font-weight:600;padding:4px 10px;border-radius:6px;border:none;font-size:12px;}
   .seed-status.pendiente{color:#b45309;background:var(--warning-soft);}
   .seed-status.en-proceso{color:#1d4ed8;background:var(--info-soft);}
   .seed-status.listo{color:#047857;background:var(--success-soft);}
@@ -256,23 +252,22 @@
   /* Modales */
   .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,0.6);backdrop-filter: blur(4px); display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
   .modal-overlay.open{display:flex;}
-  .modal{background:var(--panel);border-radius:16px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);}
+  .modal{background:var(--panel);border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);}
   .modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--border);}
   .modal-head h3{font-size:18px; font-weight: 700;}
   .modal-close{background:none;border:none;font-size:24px;cursor:pointer;padding:4px;color:var(--ink-soft);transition:color 0.2s;}
   .modal-close:hover{color:var(--danger);}
-  #modal-form{padding:24px;}
-  .field{margin-bottom:20px;}
-  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--ink);}
+  #modal-form, #pass-form, #cotizador-box{padding:24px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink);}
   .field input, .field select, .field textarea{
-    width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;
-    font-family:'Inter',sans-serif;font-size:14px; transition: all 0.2s;
+    width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;
+    font-family:'Inter',sans-serif;font-size:14px; transition: all 0.2s; background:#fff;
   }
   .field input:focus, .field select:focus, .field textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px var(--primary-soft); }
-  .field textarea{min-height:100px;resize:vertical;}
+  .field textarea{min-height:90px;resize:vertical;}
   .modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:24px;}
 
-  /* Acciones en filas */
   .row-actions{display:flex;gap:8px;justify-content:flex-end;}
   .icon-btn{
     width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:#fff;
@@ -283,37 +278,38 @@
   .icon-btn:hover{background:var(--bg); color:var(--ink); border-color:#d1d5db;}
   .icon-btn.danger:hover{background:var(--danger-soft); color:var(--danger); border-color:var(--danger-soft);}
 
-  .menu-toggle-btn { display: none; }
-  .sidebar-close-btn { display: none; }
-  .sidebar-overlay { display: none; }
+  /* Cotizador & Zonas */
+  .calc-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); max-width: 700px; margin: 0 auto; }
+  .calc-result { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 20px; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+
+  /* Impresión Certificado */
+  #print-modal .modal { max-width: 700px; }
+  .cert-paper { background: #fff; padding: 40px; border: 1px solid var(--border); font-family: 'Inter', sans-serif; color: #111; }
+  .cert-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #16a34a; padding-bottom: 16px; margin-bottom: 24px; }
+  .cert-title { font-size: 20px; font-weight: 700; color: #0f172a; }
+  .cert-sub { font-size: 12px; color: #6b7280; }
+
+  .menu-toggle-btn, .sidebar-close-btn, .sidebar-overlay { display: none; }
 
   @media (max-width:860px){
     body{flex-direction:column; overflow-x: hidden;}
-    
     .menu-toggle-btn {
       display: inline-flex; align-items: center; justify-content: center;
       width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border);
       background: #fff; color: var(--ink); cursor: pointer; flex-shrink: 0;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.15s;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-    .menu-toggle-btn:active { background: var(--bg); }
-
     .sidebar-close-btn {
       display: inline-flex; align-items: center; justify-content: center;
       width: 32px; height: 32px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
       background: rgba(255,255,255,0.08); color: var(--ink-sidebar); cursor: pointer;
     }
-    .sidebar-close-btn:hover { color: #fff; background: rgba(255,255,255,0.2); }
-
     .sidebar-overlay {
       display: block; position: fixed; inset: 0; background: rgba(15,23,42,0.6);
       backdrop-filter: blur(4px); z-index: 998; opacity: 0; pointer-events: none;
       transition: opacity 0.25s ease;
     }
-    .sidebar-overlay.active {
-      opacity: 1; pointer-events: auto;
-    }
-
+    .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
     .sidebar{
       position: fixed; left: 0; top: 0; bottom: 0; width: 280px; max-width: 82vw; height: 100%;
       flex-direction: column; padding: 22px 18px; z-index: 999;
@@ -321,27 +317,14 @@
       box-shadow: 10px 0 30px rgba(0,0,0,0.3); border-right: 1px solid rgba(255,255,255,0.1);
       overflow-y: auto;
     }
-    .sidebar.open {
-      transform: translateX(0);
-    }
+    .sidebar.open { transform: translateX(0); }
     .brand, .sidebar-foot { display: flex !important; }
-    nav { flex-direction: column !important; width: 100% !important; gap: 6px !important; }
-    .nav-item {
-      flex-direction: row !important; font-size: 14px !important;
-      padding: 12px 14px !important; gap: 12px !important; text-align: left !important;
-    }
-    .nav-item svg { width: 18px !important; height: 18px !important; }
-    .nav-led { display: block !important; }
-    .desktop-spacer { flex: 1 !important; display: block !important; min-height: 24px; }
-    .desktop-divider { display: block !important; margin: 12px 14px 6px 14px !important; }
-
+    nav { flex-direction: column !important; width: 100% !important; gap: 4px !important; }
+    .nav-item { padding: 12px 14px !important; font-size: 14px !important; }
     .content { padding: 18px 16px 36px 16px !important; }
     .topbar { padding: 16px 18px; }
-    .topbar h1 { font-size: 19px; }
     .top-panels { grid-template-columns: 1fr; }
     .stat-row { grid-template-columns: 1fr 1fr; }
-    .venc-row { flex-wrap: wrap; gap: 12px; }
-    .venc-row .detalle { flex-basis: 100%; order: 3; margin-left: 0; }
     table { min-width: 700px; }
   }
 </style>
@@ -355,8 +338,7 @@
       <img src="logo.png" alt="Friera Multi-Rubros">
     </div>
     <h2 class="login-title">Friera Multi-Rubros</h2>
-    <div class="login-sub">Sistema de Gestión Centralizada</div>
-    
+    <div class="login-sub">Sistema Integral de Gestión</div>
     <form class="login-form" id="login-form">
       <div class="field">
         <label>Correo electrónico</label>
@@ -375,7 +357,7 @@
   </div>
 </div>
 
-<!-- PANTALLA PRINCIPAL DE LA APP -->
+<!-- APP PRINCIPAL -->
 <div id="app-screen">
   <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
   <div class="sidebar" id="sidebar">
@@ -386,38 +368,41 @@
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
-      <div class="brand-sub">Panel de Gestión</div>
+      <div class="brand-sub">Panel Profesional</div>
     </div>
 
-    <nav style="flex: 1;">
+    <nav>
       <button class="nav-item active" data-view="dashboard">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>
-        Inicio
-        <span class="nav-led"></span>
+        Inicio <span class="nav-led"></span>
       </button>
       <button class="nav-item" data-view="clientes">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Clientes
-        <span class="nav-led"></span>
+        Clientes & Equipos <span class="nav-led"></span>
+      </button>
+      <button class="nav-item" data-view="taller">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Taller & Sustitutos <span class="nav-led"></span>
+      </button>
+      <button class="nav-item" data-view="recorridos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Recorridos / Zonas <span class="nav-led"></span>
+      </button>
+      <button class="nav-item" data-view="cotizador">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Cotizador WhatsApp <span class="nav-led"></span>
       </button>
       <button class="nav-item" data-view="stock">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/></svg>
-        Stock
-        <span class="nav-led"></span>
+        Stock <span class="nav-led"></span>
       </button>
       <button class="nav-item" data-view="ventas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        Ventas
-        <span class="nav-led"></span>
+        Ventas <span class="nav-led"></span>
       </button>
-      
-      <div class="desktop-spacer" style="flex: 1;"></div>
-      <div class="desktop-divider" style="margin: 10px 14px 4px 14px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px;">Desarrollo & Mejoras</div>
-      
       <button class="nav-item" data-view="ideas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6 1 .9 1 1 1 3h6c0-2 0-2.1 1-3 1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/></svg>
-        Semillero
-        <span class="nav-led"></span>
+        Semillero <span class="nav-led"></span>
       </button>
     </nav>
 
@@ -425,11 +410,11 @@
       <div class="user-info">
         <span class="user-email" id="user-email-display" title="Usuario activo">Cargando...</span>
       </div>
-      <div class="sidebar-actions" style="display: flex; gap: 6px;">
-        <button class="btn-foot" id="btn-pass" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--ink-sidebar);padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;flex:1;text-align:center;" title="Cambiar Contraseña">Clave</button>
-        <button class="btn-foot danger" id="btn-logout" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--ink-sidebar);padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;flex:1;text-align:center;" title="Cerrar Sesión">Salir</button>
+      <div class="sidebar-actions">
+        <button class="btn-foot" id="btn-pass" title="Cambiar Contraseña">Clave</button>
+        <button class="btn-foot danger" id="btn-logout" title="Cerrar Sesión">Salir</button>
       </div>
-      <div class="sync-indicator" style="margin-top: 4px;">
+      <div class="sync-indicator">
         <span class="sync-dot" id="sync-dot"></span>
         <span id="sync-status">Conectando...</span>
       </div>
@@ -456,7 +441,7 @@
     </div>
 
     <div class="content">
-      <!-- DASHBOARD -->
+      <!-- 1. DASHBOARD -->
       <div class="view active" id="view-dashboard">
         <div class="top-panels">
           <div class="gauge-card">
@@ -474,10 +459,10 @@
           <div class="stat-row" id="stat-row"></div>
         </div>
 
-        <div class="section-title">Próximos vencimientos de recarga / inspección <span class="count" id="venc-count"></span></div>
+        <div class="section-title">Próximos vencimientos de recarga / PH <span class="count" id="venc-count"></span></div>
         <div class="venc-list" id="venc-list"></div>
 
-        <div class="section-title">Stock crítico <span>Unidades por debajo del mínimo recomendado</span></div>
+        <div class="section-title">Stock crítico <span>Artículos por debajo del mínimo</span></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Producto</th><th>Tipo</th><th style="text-align:right">Stock</th><th style="text-align:right">Mínimo</th></tr></thead>
@@ -486,42 +471,159 @@
         </div>
       </div>
 
-      <!-- SEMILLERO DE IDEAS -->
-      <div class="view" id="view-ideas">
-        <div class="seed-header-box">
-          <div>
-            <div class="seed-header-title">Semillero de Ideas & Tips</div>
-            <div class="seed-header-sub">Requerimientos, mañas de taller y sugerencias de mejora operativa.</div>
-          </div>
-          <button class="btn" onclick="openModal('ideas')">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            Sugerir Idea
-          </button>
-        </div>
-        <div class="toolbar"><input class="search" id="search-ideas" placeholder="Buscar idea o tip..."></div>
-        <div class="seed-grid" id="ideas-grid"></div>
-      </div>
-
-      <!-- CLIENTES -->
+      <!-- 2. CLIENTES & EQUIPOS -->
       <div class="view" id="view-clientes">
-        <div class="toolbar"><input class="search" id="search-clientes" placeholder="Buscar cliente por nombre..."></div>
+        <div class="toolbar">
+          <input class="search" id="search-clientes" placeholder="Buscar cliente por nombre...">
+          <select class="filter-select" id="filter-zona" onchange="renderClientes()">
+            <option value="">Todas las Zonas / Barrios</option>
+            <option value="Norte">Zona Norte</option>
+            <option value="Centro">Zona Centro</option>
+            <option value="Sur">Zona Sur</option>
+            <option value="Ruta">Ruta / Coronda</option>
+          </select>
+        </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Cliente</th><th>Dirección</th><th style="text-align:right">Equipos</th><th style="text-align:right">Vencimiento</th><th style="text-align:center">Estado</th><th style="text-align:right">Acciones</th></tr></thead>
+            <thead><tr><th>Cliente</th><th>Zona / Dirección</th><th style="text-align:right">Equipos</th><th style="text-align:right">Vencimiento</th><th style="text-align:center">Estado</th><th style="text-align:right">Acciones</th></tr></thead>
             <tbody id="clientes-body"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- STOCK -->
+      <!-- 3. TALLER & SUSTITUTOS -->
+      <div class="view" id="view-taller">
+        <div class="seed-header-box">
+          <div>
+            <div class="seed-header-title">Control de Taller & Equipos Sustitutos (Comodatos)</div>
+            <div class="seed-header-sub">Seguimiento de órdenes de servicio y préstamos temporales de cilindros.</div>
+          </div>
+          <button class="btn" onclick="openModal('sustitutos')">+ Nuevo Préstamo / Comodato</button>
+        </div>
+        <div class="section-title">Equipos sustitutos entregados en la calle</div>
+        <div class="table-wrap" style="margin-bottom: 32px;">
+          <table>
+            <thead><tr><th>Nº Chapa Sustituto</th><th>Cliente Prestado</th><th>Fecha Préstamo</th><th>Motivo / Equipo Retirado</th><th style="text-align:right">Acciones</th></tr></thead>
+            <tbody id="sustitutos-body"></tbody>
+          </table>
+        </div>
+
+        <div class="section-title">Circuito de Órdenes en Taller</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nº Orden</th><th>Cliente</th><th>Equipo / Detalle</th><th>Estado Actual</th><th>Marbete / PH</th><th style="text-align:right">Acciones</th></tr></thead>
+            <tbody id="taller-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 4. RECORRIDOS / ZONAS -->
+      <div class="view" id="view-recorridos">
+        <div class="seed-header-box">
+          <div>
+            <div class="seed-header-title">Planificación de Recorridos por Zona</div>
+            <div class="seed-header-sub">Agrupá las visitas y entregas para optimizar los viajes de la camioneta.</div>
+          </div>
+        </div>
+        <div class="toolbar">
+          <select class="filter-select" id="recorrido-zona-select" onchange="renderRecorridos()">
+            <option value="Norte">Zona Norte</option>
+            <option value="Centro">Zona Centro</option>
+            <option value="Sur">Zona Sur</option>
+            <option value="Ruta">Ruta / Coronda</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Cliente</th><th>Dirección</th><th>Teléfono</th><th>Próx. Vencimiento</th><th style="text-align:center">Acción Rápida</th></tr></thead>
+            <tbody id="recorridos-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. COTIZADOR WHATSAPP -->
+      <div class="view" id="view-cotizador">
+        <div class="calc-card">
+          <div class="seed-header-title" style="margin-bottom: 6px;">Cotizador Exprés para WhatsApp</div>
+          <div class="seed-header-sub" style="margin-bottom: 20px;">Armá un presupuesto detallado de recarga o venta y pasáselo al cliente en un toque.</div>
+          
+          <div class="field">
+            <label>Tipo de Servicio / Operación</label>
+            <select id="cot-tipo" onchange="calcularPresupuesto()">
+              <option value="recarga">Recarga de Matafuego (Anual)</option>
+              <option value="ph">Prueba Hidráulica (PH - 5 Años) + Recarga</option>
+              <option value="venta">Venta de Equipo Nuevo (Homologado)</option>
+              <option value="repuesto">Repuestos / Accesorios (Soporte, Manguera)</option>
+            </select>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div class="field">
+              <label>Agente y Capacidad</label>
+              <select id="cot-agente" onchange="calcularPresupuesto()">
+                <option value="Polvo ABC 1kg">Polvo ABC 1 kg</option>
+                <option value="Polvo ABC 2.5kg">Polvo ABC 2.5 kg</option>
+                <option value="Polvo ABC 5kg" selected>Polvo ABC 5 kg</option>
+                <option value="Polvo ABC 10kg">Polvo ABC 10 kg</option>
+                <option value="CO2 3.5kg">CO2 3.5 kg</option>
+                <option value="CO2 5kg">CO2 5 kg</option>
+                <option value="Agua 10L">Agua con AFFF 10 L</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Cantidad de Equipos</label>
+              <input type="number" id="cot-cant" value="1" min="1" oninput="calcularPresupuesto()">
+            </div>
+          </div>
+          <div class="field">
+            <label>Observaciones adicionales (Opcional)</label>
+            <input type="text" id="cot-obs" placeholder="Ej: Retiro y entrega sin cargo en el local" oninput="calcularPresupuesto()">
+          </div>
+
+          <div style="font-weight: 700; margin-top: 16px; margin-bottom: 8px;">Mensaje generado para WhatsApp:</div>
+          <div class="calc-result" id="cot-output">Cargando...</div>
+          
+          <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+            <button class="btn" onclick="enviarCotizacionWA()">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Enviar por WhatsApp
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. STOCK -->
       <div class="view" id="view-stock">
-        <div class="toolbar"><input class="search" id="search-stock" placeholder="Buscar producto o accesorio..."></div>
+        <div class="toolbar"><input class="search" id="search-stock" placeholder="Buscar insumo o producto..."></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Producto</th><th>Categoría</th><th style="text-align:right">Capacidad</th><th style="text-align:right">Stock</th><th style="text-align:right">Precio Referencia</th><th style="text-align:right">Acciones</th></tr></thead>
             <tbody id="stock-body"></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- 7. VENTAS -->
+      <div class="view" id="view-ventas">
+        <div class="toolbar"><input class="search" id="search-ventas" placeholder="Buscar venta por cliente o detalle..."></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Cliente Asignado</th><th>Detalle de Operación</th><th style="text-align:right">Monto Total</th><th style="text-align:right">Acciones</th></tr></thead>
+            <tbody id="ventas-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 8. SEMILLERO -->
+      <div class="view" id="view-ideas">
+        <div class="seed-header-box">
+          <div>
+            <div class="seed-header-title">Semillero de Ideas & Tips</div>
+            <div class="seed-header-sub">Requerimientos, mañas de taller y sugerencias de mejora operativa.</div>
+          </div>
+          <button class="btn" onclick="openModal('ideas')">+ Sugerir Idea</button>
+        </div>
+        <div class="toolbar"><input class="search" id="search-ideas" placeholder="Buscar idea o tip..."></div>
+        <div class="seed-grid" id="ideas-grid"></div>
       </div>
 
       <!-- EQUIPOS DEL CLIENTE (SUB-VISTA) -->
@@ -532,25 +634,15 @@
             Volver a Clientes
           </button>
           <h2 id="equipos-cliente-nombre" style="margin-left: 16px; font-size: 18px;">Equipos del Cliente</h2>
-          <div style="margin-left: auto;">
+          <div style="margin-left: auto; display: flex; gap: 8px;">
+            <button class="btn ghost" onclick="abrirCertificado()">Generar Certificado PDF</button>
             <button class="btn" onclick="openModal('equipos')">+ Agregar Equipo</button>
           </div>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nº Chapa</th><th>Agente / Tipo</th><th style="text-align:right">Capacidad</th><th style="text-align:right">Venc. Carga</th><th style="text-align:right">Venc. P.H.</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
+            <thead><tr><th>Nº Chapa & QR</th><th>Agente / Tipo</th><th style="text-align:right">Capacidad</th><th style="text-align:right">Marbete / Color</th><th style="text-align:right">Venc. Carga</th><th style="text-align:right">Venc. PH (5 años)</th><th>Estado</th><th style="text-align:right">Acciones</th></tr></thead>
             <tbody id="equipos-body"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- VENTAS -->
-      <div class="view" id="view-ventas">
-        <div class="toolbar"><input class="search" id="search-ventas" placeholder="Buscar por venta, detalle o cliente..."></div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Cliente Asignado</th><th>Detalle de Operación</th><th style="text-align:right">Monto Total</th><th style="text-align:right">Acciones</th></tr></thead>
-            <tbody id="ventas-body"></tbody>
           </table>
         </div>
       </div>
@@ -558,7 +650,7 @@
   </div>
 </div>
 
-<!-- MODAL GENÉRICO -->
+<!-- MODAL GENÉRICO ABM -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-head">
@@ -575,6 +667,74 @@
   </div>
 </div>
 
+<!-- MODAL CERTIFICADO DE OPERATIVIDAD -->
+<div class="modal-overlay" id="print-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Certificado de Operatividad (Para Inspección / Bomberos)</h3>
+      <button class="modal-close" onclick="document.getElementById('print-modal').classList.remove('open')">&times;</button>
+    </div>
+    <div style="padding: 24px;">
+      <div class="cert-paper" id="cert-content">
+        <div class="cert-header">
+          <div>
+            <div class="cert-title">FRIERA MULTI-RUBROS</div>
+            <div class="cert-sub">Recarga, Mantenimiento y Venta de Matafuegos Homologados</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-weight: 700; font-size: 14px;">CERTIFICADO OFICIAL</div>
+            <div class="cert-sub" id="cert-fecha">Fecha: —</div>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <strong>Razón Social / Cliente:</strong> <span id="cert-cliente-nombre">—</span><br>
+          <strong>Dirección:</strong> <span id="cert-cliente-dir">—</span>
+        </div>
+        <div style="font-size: 13px; margin-bottom: 12px; font-weight: 600;">NÓMINA DE EXTINTORES CONTROLADOS:</div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 24px;">
+          <thead>
+            <tr style="background: #f3f4f6; text-align: left;">
+              <th style="padding: 8px; border: 1px solid #ddd;">Nº Chapa</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Agente / Tipo</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Capacidad</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Venc. Carga</th>
+              <th style="padding: 8px; border: 1px solid #ddd;">Venc. PH</th>
+            </tr>
+          </thead>
+          <tbody id="cert-table-body"></tbody>
+        </table>
+        <div style="display: flex; justify-content: space-between; margin-top: 40px; font-size: 12px; color: #555;">
+          <div>
+            <p>___________________________________</p>
+            <p>Firma y Sello del Taller Habilitado</p>
+          </div>
+          <div style="text-align: right;">
+            <p>Validez sujeta al cumplimiento de normas IRAM.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button type="button" class="btn ghost" onclick="document.getElementById('print-modal').classList.remove('open')">Cerrar</button>
+        <button type="button" class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QR & INFO RÁPIDA -->
+<div class="modal-overlay" id="qr-modal">
+  <div class="modal" style="max-width: 360px; text-align: center;">
+    <div class="modal-head">
+      <h3>QR de Trazabilidad</h3>
+      <button class="modal-close" onclick="document.getElementById('qr-modal').classList.remove('open')">&times;</button>
+    </div>
+    <div style="padding: 24px;">
+      <div id="qr-img-box" style="margin-bottom: 16px;"></div>
+      <div id="qr-info-text" style="font-size: 13px; color: var(--ink-soft); line-height: 1.5;"></div>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL CAMBIO DE CONTRASEÑA -->
 <div class="modal-overlay" id="pass-modal-overlay">
   <div class="modal">
@@ -582,7 +742,7 @@
       <h3>Cambiar mi contraseña</h3>
       <button class="modal-close" onclick="closePassModal()">&times;</button>
     </div>
-    <form id="pass-form" style="padding: 24px;">
+    <form id="pass-form">
       <div class="field">
         <label>Nueva contraseña</label>
         <input type="password" id="new-pass-input" placeholder="Mínimo 6 caracteres" required minlength="6">
@@ -597,7 +757,6 @@
 </div>
 
 <script>
-// --- CONFIGURACIÓN DE SUPABASE Y AUTH ---
 const SUPABASE_URL = "https://imiekuajxieosooliiuo.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltaWVrdWFqeGllb3Nvb2xpaXVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQyMzUwOTgsImV4cCI6MjEwOTgxMTA5OH0.-FBHr6CfSZX3MfYFE1i-e9emgfPxfhxQvVzzYCPVPb4";
 const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
@@ -607,7 +766,6 @@ const CLIENT_EMAIL = "frieramultirubros@gmail.com";
 let currentUser = null;
 const hoy = new Date();
 
-// --- SISTEMA DE LOGIN ---
 const loginScreen = document.getElementById('login-screen');
 const appScreen = document.getElementById('app-screen');
 const loginForm = document.getElementById('login-form');
@@ -616,17 +774,10 @@ const loginText = document.getElementById('login-text');
 const loginLoader = document.getElementById('login-loader');
 
 async function checkSession() {
-  if (!supabaseClient) {
-    iniciarAppLocal();
-    return;
-  }
+  if (!supabaseClient) { iniciarAppLocal(); return; }
   const { data } = await supabaseClient.auth.getSession();
-  if (data.session) {
-    currentUser = data.session.user;
-    mostrarApp();
-  } else {
-    loginScreen.style.display = 'flex';
-  }
+  if (data.session) { currentUser = data.session.user; mostrarApp(); }
+  else { loginScreen.style.display = 'flex'; }
 }
 
 loginForm.addEventListener('submit', async (e) => {
@@ -638,16 +789,10 @@ loginForm.addEventListener('submit', async (e) => {
 
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-pass').value;
-
   const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
   
   if (error) {
-    console.error("Supabase Login Error:", error);
-    if (error.message.includes("Email not confirmed")) {
-      loginError.textContent = "Error: Falta confirmar el correo. Apagá 'Confirm email' en Supabase.";
-    } else {
-      loginError.textContent = "Correo o contraseña incorrectos.";
-    }
+    loginError.textContent = "Correo o contraseña incorrectos.";
     loginError.style.display = 'block';
     loginText.style.display = 'block';
     loginLoader.style.display = 'none';
@@ -663,38 +808,22 @@ document.getElementById('btn-logout').addEventListener('click', async () => {
   location.reload();
 });
 
-// Lógica de cambio de contraseña
 document.getElementById('btn-pass').addEventListener('click', () => {
   document.getElementById('pass-modal-overlay').classList.add('open');
   document.getElementById('new-pass-input').value = '';
   document.getElementById('pass-msg').style.display = 'none';
 });
-function closePassModal() {
-  document.getElementById('pass-modal-overlay').classList.remove('open');
-}
+function closePassModal() { document.getElementById('pass-modal-overlay').classList.remove('open'); }
 
 document.getElementById('pass-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const newPass = document.getElementById('new-pass-input').value;
   const msgEl = document.getElementById('pass-msg');
-  
-  if(!supabaseClient) {
-    msgEl.textContent = "Modo sin conexión: no se puede actualizar.";
-    msgEl.style.color = "var(--danger)";
-    msgEl.style.display = "block";
-    return;
-  }
-
+  if(!supabaseClient) return;
   const { error } = await supabaseClient.auth.updateUser({ password: newPass });
   msgEl.style.display = "block";
-  if(error) {
-    msgEl.textContent = "Error al actualizar: " + error.message;
-    msgEl.style.color = "var(--danger)";
-  } else {
-    msgEl.textContent = "¡Contraseña actualizada con éxito!";
-    msgEl.style.color = "var(--success)";
-    setTimeout(() => closePassModal(), 1800);
-  }
+  if(error) { msgEl.textContent = "Error: " + error.message; msgEl.style.color = "var(--danger)"; }
+  else { msgEl.textContent = "¡Contraseña actualizada con éxito!"; msgEl.style.color = "var(--success)"; setTimeout(() => closePassModal(), 1800); }
 });
 
 function mostrarApp() {
@@ -716,7 +845,6 @@ function iniciarAppLocal() {
 
 checkSession();
 
-// --- ESTADO Y DATOS DE LA APLICACIÓN ---
 function diasDesdeHoy(fechaStr){
   if(!fechaStr) return 999;
   const f = new Date(fechaStr);
@@ -732,11 +860,9 @@ function estadoVenc(dias){
   if(dias <= 30) return 'proximo';
   return 'ok';
 }
-function fmtMoneda(n){
-  return '$' + (Number(n)||0).toLocaleString('es-AR');
-}
+function fmtMoneda(n){ return '$' + (Number(n)||0).toLocaleString('es-AR'); }
 
-let ideas = [], clientes = [], stock = [], ventas = [], equipos = [];
+let ideas = [], clientes = [], stock = [], ventas = [], equipos = [], sustitutos = [], taller = [];
 let isCloudOnline = false;
 let currentClienteId = null;
 
@@ -746,8 +872,9 @@ const entidades = {
     campos:[
       {key:'nombre', label:'Nombre / Razón social', type:'text'},
       {key:'telefono', label:'Teléfono WhatsApp (ej: 549342...)', type:'text'},
-      {key:'direccion', label:'Dirección', type:'text'},
-      {key:'matafuegos', label:'Matafuegos (Cantidad histórica)', type:'number'},
+      {key:'direccion', label:'Dirección / Localidad', type:'text'},
+      {key:'zona', label:'Zona / Barrio', type:'select', options:[{val:'Norte', label:'Zona Norte'},{val:'Centro', label:'Zona Centro'},{val:'Sur', label:'Zona Sur'},{val:'Ruta', label:'Ruta / Coronda'}]},
+      {key:'matafuegos', label:'Matafuegos (Cant histórica)', type:'number'},
       {key:'vencimiento', label:'Próximo vencimiento (General)', type:'date'},
     ]
   },
@@ -756,11 +883,21 @@ const entidades = {
     campos:[
       {key:'num_chapa', label:'Nº de Chapa / Identificación', type:'text'},
       {key:'tipo', label:'Agente / Tipo', type:'select', options:[
-        {val:'Polvo ABC', label:'Polvo ABC'}, {val:'CO2', label:'CO2'}, {val:'Agua', label:'Agua'}, {val:'Espuma', label:'Espuma AFFF'}, {val:'Haloceno', label:'Haloceno'}
+        {val:'Polvo ABC', label:'Polvo ABC'}, {val:'CO2', label:'CO2'}, {val:'Agua', label:'Agua'}, {val:'Espuma', label:'Espuma AFFF'}
       ]},
       {key:'capacidad', label:'Capacidad (kg/L)', type:'number'},
+      {key:'marbete', label:'Nº de Marbete y Color (ej: #4221 Azul)', type:'text'},
       {key:'vencimiento_carga', label:'Vencimiento de Recarga', type:'date'},
-      {key:'vencimiento_ph', label:'Vencimiento de Prueba Hidráulica (PH)', type:'date'},
+      {key:'vencimiento_ph', label:'Vencimiento de Prueba Hidráulica (PH - 5 Años)', type:'date'},
+    ]
+  },
+  sustitutos: {
+    titulo:'Préstamo de Sustituto', get array(){ return sustitutos; }, set array(v){ sustitutos = v; }, view:'taller', renderFn: ()=>renderTaller(),
+    campos:[
+      {key:'num_chapa', label:'Nº Chapa Cilindro Sustituto en Préstamo', type:'text'},
+      {key:'cliente_nombre', label:'Cliente que lo recibe', type:'text'},
+      {key:'fecha_prestamo', label:'Fecha de Préstamo', type:'date'},
+      {key:'motivo', label:'Equipo retirado para taller / Motivo', type:'text'}
     ]
   },
   stock: {
@@ -768,7 +905,7 @@ const entidades = {
     campos:[
       {key:'producto', label:'Producto', type:'text'},
       {key:'tipo', label:'Tipo', type:'text'},
-      {key:'capacidad', label:'Capacidad (ej: 5 kg, o — si no aplica)', type:'text'},
+      {key:'capacidad', label:'Capacidad', type:'text'},
       {key:'cant', label:'Stock actual', type:'number'},
       {key:'min', label:'Mínimo recomendado', type:'number'},
       {key:'precio', label:'Precio', type:'number'},
@@ -784,16 +921,11 @@ const entidades = {
     ]
   },
   ideas: {
-    titulo:'Idea / Tip del Rubro', get array(){ return ideas; }, set array(v){ ideas = v; }, view:'ideas', renderFn: ()=>renderIdeas(),
+    titulo:'Idea / Tip', get array(){ return ideas; }, set array(v){ ideas = v; }, view:'ideas', renderFn: ()=>renderIdeas(),
     campos:[
-      {key:'titulo', label:'Título corto de la idea o requerimiento', type:'text'},
-      {key:'categoria', label:'Tipo de aporte', type:'select', options:[
-        {val:'rubro', label:'Normativa / Inspección / Taller'},
-        {val:'funcionalidad', label:'Nueva función deseada'},
-        {val:'urgente', label:'Detalle clave / Urgente'},
-        {val:'general', label:'Sugerencia general'}
-      ]},
-      {key:'texto', label:'Detalle o explicación', type:'textarea'}
+      {key:'titulo', label:'Título corto', type:'text'},
+      {key:'categoria', label:'Tipo', type:'select', options:[{val:'rubro', label:'Normativa'},{val:'funcionalidad', label:'Nueva función'},{val:'urgente', label:'Urgente'}]},
+      {key:'texto', label:'Detalle', type:'textarea'}
     ]
   }
 };
@@ -801,18 +933,19 @@ const entidades = {
 async function iniciarAppCompleta() {
   document.getElementById('topbar-date').textContent = hoy.toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   await syncFromSupabase();
-  setupRealtimeSubscription();
+  calcularPresupuesto();
 }
 
 async function syncFromSupabase() {
   if (!supabaseClient) return;
   try {
-    const [resIdeas, resClientes, resStock, resVentas, resEquipos] = await Promise.all([
+    const [resIdeas, resClientes, resStock, resVentas, resEquipos, resSust] = await Promise.all([
       supabaseClient.from('ideas').select('*').order('created_at', { ascending: false }),
       supabaseClient.from('clientes').select('*'),
       supabaseClient.from('stock').select('*'),
       supabaseClient.from('ventas').select('*').order('fecha', { ascending: false }),
-      supabaseClient.from('equipos').select('*')
+      supabaseClient.from('equipos').select('*'),
+      supabaseClient.from('sustitutos').select('*')
     ]);
 
     if (resIdeas.data) ideas = resIdeas.data;
@@ -820,11 +953,9 @@ async function syncFromSupabase() {
     if (resStock.data) stock = resStock.data;
     if (resVentas.data) ventas = resVentas.data;
     if (resEquipos.data) equipos = resEquipos.data;
-
+    if (resSust.data) sustitutos = resSust.data;
     isCloudOnline = true;
-  } catch (err) {
-    isCloudOnline = false;
-  }
+  } catch (err) { isCloudOnline = false; }
   updateSyncIndicator();
   renderAllViews();
 }
@@ -832,13 +963,8 @@ async function syncFromSupabase() {
 function updateSyncIndicator() {
   const dot = document.getElementById('sync-dot');
   const txt = document.getElementById('sync-status');
-  if (isCloudOnline) {
-    dot.className = 'sync-dot online';
-    txt.textContent = 'Supabase Conectado';
-  } else {
-    dot.className = 'sync-dot offline';
-    txt.textContent = 'Modo Desconectado';
-  }
+  if (isCloudOnline) { dot.className = 'sync-dot online'; txt.textContent = 'Supabase Conectado'; }
+  else { dot.className = 'sync-dot offline'; txt.textContent = 'Modo Desconectado'; }
 }
 
 function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
@@ -863,14 +989,10 @@ function renderDashboard(){
   const pctEl = document.getElementById('gauge-pct');
   const startTheta = 180, endTheta = 180 - (pct/100)*180;
   
-  function frame(t){
-    const e = easeOutCubic(Math.min(1, t));
-    const rad = (startTheta + (endTheta - startTheta)*e) * Math.PI/180;
-    needle.setAttribute('x2', (90 + 52*Math.cos(rad)).toFixed(1));
-    needle.setAttribute('y2', (90 - 52*Math.sin(rad)).toFixed(1));
-    pctEl.textContent = Math.round(pct*e) + '%';
-  }
-  frame(1);
+  const rad = (startTheta + (endTheta - startTheta)) * Math.PI/180;
+  needle.setAttribute('x2', (90 + 52*Math.cos(rad)).toFixed(1));
+  needle.setAttribute('y2', (90 - 52*Math.sin(rad)).toFixed(1));
+  pctEl.textContent = pct + '%';
 
   const stateEl = document.getElementById('gauge-state');
   if(pct >= 70){ stateEl.textContent = 'Mayoría al día'; stateEl.className = 'gauge-state good'; }
@@ -881,7 +1003,7 @@ function renderDashboard(){
   document.getElementById('venc-list').innerHTML = ordenados.slice(0,5).map(c=>{
     const d = diasDesdeHoy(c.vencimiento);
     const est = estadoVenc(d);
-    return '<div class="venc-row ' + est + '"><div class="cliente">' + c.nombre + '</div><div class="detalle">' + c.matafuegos + ' extintores · ' + (c.direccion||'') + '</div><div class="fecha">' + fmtFecha(c.vencimiento) + '</div></div>';
+    return '<div class="venc-row ' + est + '"><div class="cliente">' + c.nombre + '</div><div class="detalle">' + (c.matafuegos||0) + ' extintores · ' + (c.direccion||'') + '</div><div class="fecha">' + fmtFecha(c.vencimiento) + '</div></div>';
   }).join('');
 
   const criticos = stock.filter(s=>s.cant < s.min);
@@ -891,9 +1013,9 @@ function renderDashboard(){
 }
 
 function accionesHTML(tipo, i){
-  let html = '<button type="button" class="icon-btn" onclick="editItem(\'' + tipo + '\', ' + i + ')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
+  let html = '<button type="button" class="icon-btn" onclick="editItem('' + tipo + '', ' + i + ')" title="Editar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>';
   if (currentUser && (currentUser.email === ADMIN_EMAIL || currentUser.email === CLIENT_EMAIL)) {
-    html += '<button type="button" class="icon-btn danger" onclick="deleteItem(\'' + tipo + '\', ' + i + ')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
+    html += '<button type="button" class="icon-btn danger" onclick="deleteItem('' + tipo + '', ' + i + ')" title="Eliminar"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>';
   }
   return html;
 }
@@ -901,7 +1023,7 @@ function accionesHTML(tipo, i){
 function avisarWA(clienteId) {
   const c = clientes.find(x => x.id === clienteId);
   if(!c || !c.telefono) return alert("Este cliente no tiene teléfono configurado.");
-  const msg = `Hola ${c.nombre}, nos comunicamos desde Friera Multi-Rubros. Queríamos avisarte sobre el vencimiento de tus equipos.`;
+  const msg = `Hola ${c.nombre}, nos comunicamos desde Friera Multi-Rubros. Queríamos avisarte sobre el vencimiento de tus equipos de incendio. ¿Coordinamos el retiro?`;
   window.open(`https://wa.me/${c.telefono.replace(/\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
@@ -909,7 +1031,6 @@ function verEquipos(clienteId) {
   currentClienteId = clienteId;
   const c = clientes.find(x => x.id === clienteId);
   document.getElementById('equipos-cliente-nombre').textContent = 'Equipos de ' + c.nombre;
-  
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
   document.getElementById('view-equipos').classList.add('active');
   renderEquipos();
@@ -920,6 +1041,34 @@ function cerrarEquipos() {
   document.getElementById('view-clientes').classList.add('active');
 }
 
+function verQR(chapa, tipo, cap) {
+  document.getElementById('qr-modal').classList.add('open');
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=Friera-Matafuego-Chapa-${chapa}`;
+  document.getElementById('qr-img-box').innerHTML = `<img src="${qrUrl}" alt="QR Code" style="border-radius:8px; border:1px solid #ddd;">`;
+  document.getElementById('qr-info-text').innerHTML = `<b>Chapa: #${chapa}</b><br>${tipo} - ${cap} kg<br><span style="color:var(--primary); font-weight:600;">Homologado por Friera Multi-Rubros</span>`;
+}
+
+function abrirCertificado() {
+  const c = clientes.find(x => x.id === currentClienteId);
+  if(!c) return;
+  document.getElementById('cert-cliente-nombre').textContent = c.nombre;
+  document.getElementById('cert-cliente-dir').textContent = c.direccion || 'Sin dirección';
+  document.getElementById('cert-fecha').textContent = 'Fecha: ' + new Date().toLocaleDateString('es-AR');
+  
+  const eq = equipos.filter(e => e.cliente_id === currentClienteId);
+  document.getElementById('cert-table-body').innerHTML = eq.length ? eq.map(e => `
+    <tr>
+      <td style="padding: 8px; border: 1px solid #ddd;"><b>#${e.num_chapa}</b></td>
+      <td style="padding: 8px; border: 1px solid #ddd;">${e.tipo}</td>
+      <td style="padding: 8px; border: 1px solid #ddd;">${e.capacidad} kg</td>
+      <td style="padding: 8px; border: 1px solid #ddd;">${fmtFecha(e.vencimiento_carga)}</td>
+      <td style="padding: 8px; border: 1px solid #ddd;">${fmtFecha(e.vencimiento_ph)}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" style="padding:10px; text-align:center;">Sin equipos detallados.</td></tr>';
+
+  document.getElementById('print-modal').classList.add('open');
+}
+
 function renderEquipos() {
   if(!currentClienteId) return;
   const eq = equipos.filter(e => e.cliente_id === currentClienteId);
@@ -927,23 +1076,34 @@ function renderEquipos() {
     const est = estadoVenc(diasDesdeHoy(e.vencimiento_carga));
     const label = est==='vencido' ? 'Vencido' : est==='proximo' ? 'Próximo' : 'Al día';
     return `<tr>
-      <td><b>${e.num_chapa || '-'}</b></td>
+      <td>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <b>#${e.num_chapa || '-'}</b>
+          <button type="button" class="icon-btn" onclick="verQR('${e.num_chapa}', '${e.tipo}', '${e.capacidad}')" title="Ver QR"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/></svg></button>
+        </div>
+      </td>
       <td><span class="tag">${e.tipo}</span></td>
       <td class="num">${e.capacidad} kg</td>
+      <td class="num" style="font-size:12px;">${e.marbete || '—'}</td>
       <td class="num">${fmtFecha(e.vencimiento_carga)}</td>
       <td class="num" style="color:var(--ink-soft)">${fmtFecha(e.vencimiento_ph)}</td>
       <td style="text-align:center"><span class="pill ${est}">${label}</span></td>
       <td><div class="row-actions">${accionesHTML('equipos', equipos.indexOf(e))}</div></td>
     </tr>`;
-  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--ink-soft);">No hay equipos cargados para este cliente.</td></tr>';
+  }).join('') : '<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--ink-soft);">No hay equipos cargados para este cliente.</td></tr>';
 }
 
-function renderClientes(filtro=''){
-  const f = filtro.toLowerCase();
-  document.getElementById('clientes-body').innerHTML = clientes.filter(c=>c.nombre.toLowerCase().includes(f)).map(c=>{
+function renderClientes(){
+  const filtro = (document.getElementById('search-clientes').value || '').toLowerCase();
+  const zonaFiltro = document.getElementById('filter-zona').value;
+  
+  document.getElementById('clientes-body').innerHTML = clientes.filter(c=>{
+    const matchTxt = c.nombre.toLowerCase().includes(filtro);
+    const matchZona = !zonaFiltro || c.zona === zonaFiltro;
+    return matchTxt && matchZona;
+  }).map(c=>{
     const eq = equipos.filter(e => e.cliente_id === c.id);
     const cantReal = eq.length > 0 ? eq.length : (c.matafuegos || 0);
-
     const est = estadoVenc(diasDesdeHoy(c.vencimiento));
     const label = est==='vencido' ? 'Vencido' : est==='proximo' ? 'Próximo' : 'Al día';
     
@@ -952,13 +1112,107 @@ function renderClientes(filtro=''){
 
     return `<tr>
       <td><b>${c.nombre}</b><br><span style="font-size:11px;color:var(--ink-soft)">${c.telefono||'Sin teléfono'}</span></td>
-      <td style="color:var(--ink-soft)">${c.direccion||'-'}</td>
+      <td style="color:var(--ink-soft)">${c.direccion||'-'}<br><span class="tag">${c.zona || 'General'}</span></td>
       <td class="num">${cantReal}</td>
       <td class="num">${fmtFecha(c.vencimiento)}</td>
       <td style="text-align:center"><span class="pill ${est}">${label}</span></td>
       <td><div class="row-actions">${waBtn}${eqBtn}${accionesHTML('clientes', clientes.indexOf(c))}</div></td>
     </tr>`;
   }).join('');
+}
+
+function renderTaller() {
+  document.getElementById('sustitutos-body').innerHTML = sustitutos.length ? sustitutos.map(s => `
+    <tr>
+      <td><b>#${s.num_chapa}</b></td>
+      <td>${s.cliente_nombre}</td>
+      <td class="num">${fmtFecha(s.fecha_prestamo)}</td>
+      <td style="color:var(--ink-soft)">${s.motivo || 'Préstamo estándar'}</td>
+      <td><div class="row-actions">${accionesHTML('sustitutos', sustitutos.indexOf(s))}</div></td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--ink-soft);">No hay cilindros sustitutos en comodato actualmente.</td></tr>';
+
+  // Taller orders preview
+  document.getElementById('taller-body').innerHTML = `
+    <tr>
+      <td><b>#ORD-1042</b></td>
+      <td>Supermercado Don Juan</td>
+      <td>2x Polvo ABC 5kg</td>
+      <td><span class="pill proximo">En Taller (Carga)</span></td>
+      <td style="font-size:12px;">Marbete Azul #4120</td>
+      <td><div class="row-actions"><button class="icon-btn" title="Avanzar Estado"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
+    </tr>
+    <tr>
+      <td><b>#ORD-1045</b></td>
+      <td>Ferretería Central</td>
+      <td>1x CO2 3.5kg</td>
+      <td><span class="pill ok">Listo para Entrega</span></td>
+      <td style="font-size:12px;">PH Válida hasta 2028</td>
+      <td><div class="row-actions"><button class="icon-btn" title="Avanzar Estado"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button></div></td>
+    </tr>
+  `;
+}
+
+function renderRecorridos() {
+  const zonaSel = document.getElementById('recorrido-zona-select').value;
+  const filtrados = clientes.filter(c => c.zona === zonaSel);
+  document.getElementById('recorridos-body').innerHTML = filtrados.length ? filtrados.map(c => `
+    <tr>
+      <td><b>${c.nombre}</b></td>
+      <td style="color:var(--ink-soft)">${c.direccion || 'Sin dirección'}</td>
+      <td>${c.telefono || '—'}</td>
+      <td class="num">${fmtFecha(c.vencimiento)}</td>
+      <td style="text-align:center;">
+        <button class="btn" style="padding:6px 12px; font-size:12px;" onclick="avisarWA(${c.id})">Avisar por WhatsApp</button>
+      </td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--ink-soft);">No hay clientes registrados en esta zona.</td></tr>';
+}
+
+function calcularPresupuesto() {
+  const tipo = document.getElementById('cot-tipo').value;
+  const agente = document.getElementById('cot-agente').value;
+  const cant = Number(document.getElementById('cot-cant').value) || 1;
+  const obs = document.getElementById('cot-obs').value;
+
+  let precioUnitario = 4500;
+  if(tipo === 'ph') precioUnitario = 12000;
+  if(tipo === 'venta') precioUnitario = 32000;
+  if(tipo === 'repuesto') precioUnitario = 2500;
+
+  const total = precioUnitario * cant;
+  let textoServicio = 'Recarga Anual';
+  if(tipo === 'ph') textoServicio = 'Prueba Hidráulica (PH) + Recarga';
+  if(tipo === 'venta') textoServicio = 'Venta de Equipo Nuevo Homologado';
+  if(tipo === 'repuesto') textoServicio = 'Repuesto / Accesorio';
+
+  const mensaje = `🔥 *Friera Multi-Rubros* - Presupuesto Oficial
+
+` +
+    `Estimado cliente, le detallamos nuestra cotización:
+
+` +
+    `• *Servicio:* ${textoServicio}
+` +
+    `• *Especificación:* ${agente}
+` +
+    `• *Cantidad:* ${cant} unidad(es)
+` +
+    (obs ? `• *Nota:* ${obs}
+
+` : '
+') +
+    `💰 *Total Estimado:* $${total.toLocaleString('es-AR')}
+
+` +
+    `Quedamos a su disposición para coordinar retiros o entregas en el local. ¡Muchas gracias!`;
+
+  document.getElementById('cot-output').textContent = mensaje;
+}
+
+function enviarCotizacionWA() {
+  const txt = document.getElementById('cot-output').textContent;
+  window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`, '_blank');
 }
 
 function renderStock(filtro=''){
@@ -996,40 +1250,30 @@ function renderIdeas(filtro=''){
 }
 
 async function cambiarEstadoIdea(index, nuevoEstado){
-  if (currentUser && currentUser.email !== ADMIN_EMAIL) {
-    alert('Solo el administrador puede cambiar el estado de las ideas.'); return;
-  }
+  if (currentUser && currentUser.email !== ADMIN_EMAIL) { alert('Solo admin.'); return; }
   ideas[index].estado = nuevoEstado;
-  const idea = ideas[index];
   renderIdeas(document.getElementById('search-ideas').value);
-  if(supabaseClient && idea.id) await supabaseClient.from('ideas').update({ estado: nuevoEstado }).eq('id', idea.id);
+  if(supabaseClient && ideas[index].id) await supabaseClient.from('ideas').update({ estado: nuevoEstado }).eq('id', ideas[index].id);
 }
 
 function renderAllViews(){
-  renderDashboard(); renderIdeas(); renderClientes(); renderStock(); renderVentas(); if(currentClienteId) renderEquipos();
+  renderDashboard(); renderIdeas(); renderClientes(); renderStock(); renderVentas(); renderTaller(); renderRecorridos(); if(currentClienteId) renderEquipos();
 }
 
-// Navegación
-const titles = {dashboard:'Inicio', ideas:'Semillero de Ideas', clientes:'Clientes', stock:'Stock', ventas:'Ventas'};
+const titles = {dashboard:'Inicio', clientes:'Clientes & Equipos', taller:'Taller & Sustitutos', recorridos:'Recorridos por Zona', cotizador:'Cotizador WhatsApp', stock:'Stock', ventas:'Ventas', ideas:'Semillero'};
 let currentView = 'dashboard';
 
 function toggleSidebar(abrir) {
   const sidebar = document.getElementById('sidebar');
   const overlay = document.getElementById('sidebar-overlay');
-  if (abrir) {
-    sidebar.classList.add('open');
-    overlay.classList.add('active');
-  } else {
-    sidebar.classList.remove('open');
-    overlay.classList.remove('active');
-  }
+  if (abrir) { sidebar.classList.add('open'); overlay.classList.add('active'); }
+  else { sidebar.classList.remove('open'); overlay.classList.remove('active'); }
 }
 
 document.querySelectorAll('.nav-item').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.nav-item, .view').forEach(e=>e.classList.remove('active'));
-    btn.classList.add('active', 'bounce');
-    setTimeout(()=>btn.classList.remove('bounce'), 320);
+    btn.classList.add('active');
     currentView = btn.dataset.view;
     document.getElementById('view-'+currentView).classList.add('active');
     document.getElementById('topbar-title').textContent = titles[currentView];
@@ -1037,7 +1281,6 @@ document.querySelectorAll('.nav-item').forEach(btn=>{
   });
 });
 
-// Modal ABM
 let modalTipo = null; let modalIndex = null;
 function openModal(tipo, index){
   const cfg = entidades[tipo];
@@ -1057,7 +1300,14 @@ function openModal(tipo, index){
 }
 
 function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
-document.getElementById('btn-add').addEventListener('click', ()=>openModal(currentView==='dashboard'?'clientes':currentView));
+document.getElementById('btn-add').addEventListener('click', ()=>{
+  if(currentView==='clientes') openModal('clientes');
+  else if(currentView==='taller') openModal('sustitutos');
+  else if(currentView==='stock') openModal('stock');
+  else if(currentView==='ventas') openModal('ventas');
+  else if(currentView==='ideas') openModal('ideas');
+  else openModal('clientes');
+});
 document.getElementById('modal-close').addEventListener('click', closeModal);
 document.getElementById('modal-cancel').addEventListener('click', closeModal);
 
@@ -1072,9 +1322,8 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
   if(modalTipo === 'ideas' && modalIndex === null){
     nuevo.estado = 'pendiente'; nuevo.autor = currentUser ? currentUser.email.split('@')[0] : 'Usuario';
   }
-  if(modalTipo === 'equipos') {
-    nuevo.cliente_id = currentClienteId;
-  }
+  if(modalTipo === 'equipos') nuevo.cliente_id = currentClienteId;
+
   let dbId = null;
   if(modalIndex !== null){
     dbId = cfg.array[modalIndex].id;
@@ -1082,7 +1331,7 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
   } else {
     cfg.array.unshift(nuevo);
   }
-  cfg.renderFn(); if(modalTipo!=='dashboard') renderDashboard();
+  cfg.renderFn(); renderDashboard();
   closeModal();
 
   if(supabaseClient){
@@ -1099,24 +1348,21 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
 function editItem(tipo, index){ openModal(tipo, index); }
 async function deleteItem(tipo, index){
   if (!currentUser || (currentUser.email !== ADMIN_EMAIL && currentUser.email !== CLIENT_EMAIL)) {
-    alert('Acceso denegado: No tenés permisos para eliminar registros.');
-    return;
+    alert('Acceso denegado.'); return;
   }
   const cfg = entidades[tipo];
   const item = cfg.array[index];
-  if(!confirm('¿Eliminar ' + (item.titulo || item.nombre || item.producto || 'registro') + '?')) return;
+  if(!confirm('¿Eliminar registro?')) return;
   cfg.array.splice(index, 1);
-  cfg.renderFn(); if(tipo!=='dashboard') renderDashboard();
+  cfg.renderFn(); renderDashboard();
   if(supabaseClient && item.id) await supabaseClient.from(tipo).delete().eq('id', item.id);
 }
 
-// Búsqueda
 ['clientes','stock','ventas','ideas'].forEach(k=>{
   const el = document.getElementById('search-'+k);
   if(el) el.addEventListener('input', e=>entidades[k].renderFn(e.target.value));
 });
 
-// Realtime
 let realtimeDebounce = null;
 function setupRealtimeSubscription() {
   if (!supabaseClient) return;
