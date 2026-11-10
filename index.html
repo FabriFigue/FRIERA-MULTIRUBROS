@@ -289,7 +289,6 @@
   .cert-title { font-size: 20px; font-weight: 700; color: #0f172a; }
   .cert-sub { font-size: 12px; color: #6b7280; }
 
-
   /* Indicador de Guardado y Toast */
   .save-badge {
     display: inline-flex;
@@ -647,7 +646,7 @@
             </div>
             <div class="field">
               <label>Cantidad de Equipos</label>
-              <input type="number" id="cot-cant" value="1" min="1" oninput="calcularPresupuesto()">
+              <input type="text" inputmode="numeric" id="cot-cant" value="1" oninput="calcularPresupuesto()">
             </div>
           </div>
           <div class="field">
@@ -941,7 +940,6 @@ function iniciarAppLocal() {
 
 checkSession();
 
-
 // --- SISTEMA DE FEEDBACK VISUAL DE GUARDADO (CONFIRMACIÓN HUGO) ---
 function showToast(msg, type = 'success') {
   const container = document.getElementById('toast-container');
@@ -979,6 +977,30 @@ function confirmarSincronizacion() {
     setSavingStatus(false);
     showToast("✓ Todos tus datos están guardados y al día en la nube.");
   }, 400);
+}
+
+// Parser inteligente para números con puntos de miles o decimales argentinos
+function parseNumeroAR(val) {
+  if (val === null || val === undefined) return 0;
+  let str = String(val).trim().replace('$', '').replace(/\s/g, '');
+  if (!str) return 0;
+
+  if (str.includes('.') && str.includes(',')) {
+    str = str.replace(/\./g, '').replace(',', '.');
+  } else if (str.includes(',')) {
+    str = str.replace(',', '.');
+  } else if (str.includes('.')) {
+    const parts = str.split('.');
+    if (parts.length > 2) {
+      str = parts.join('');
+    } else if (parts.length === 2) {
+      if (parts[1].length === 3) {
+        str = parts.join('');
+      }
+    }
+  }
+  const n = parseFloat(str);
+  return isNaN(n) ? 0 : n;
 }
 
 function diasDesdeHoy(fechaStr){
@@ -1044,7 +1066,7 @@ const entidades = {
       {key:'capacidad', label:'Capacidad', type:'text'},
       {key:'cant', label:'Stock actual', type:'number'},
       {key:'min', label:'Mínimo recomendado', type:'number'},
-      {key:'precio', label:'Precio', type:'number'},
+      {key:'precio', label:'Precio ($)', type:'number'},
     ]
   },
   ventas: {
@@ -1053,7 +1075,7 @@ const entidades = {
       {key:'fecha', label:'Fecha', type:'date'},
       {key:'cliente', label:'Cliente', type:'text'},
       {key:'detalle', label:'Detalle', type:'text'},
-      {key:'total', label:'Total', type:'number'},
+      {key:'total', label:'Total ($)', type:'number'},
     ]
   },
   ideas: {
@@ -1311,7 +1333,7 @@ function renderRecorridos() {
 function calcularPresupuesto() {
   const tipo = document.getElementById('cot-tipo').value;
   const agente = document.getElementById('cot-agente').value;
-  const cant = Number(document.getElementById('cot-cant').value) || 1;
+  const cant = parseNumeroAR(document.getElementById('cot-cant').value) || 1;
   const obs = document.getElementById('cot-obs').value;
 
   let precioUnitario = 4500;
@@ -1337,11 +1359,10 @@ function calcularPresupuesto() {
   document.getElementById('cot-output').textContent = mensaje;
 }
 
-
 async function guardarCotizacionEnVentas() {
   const tipo = document.getElementById('cot-tipo').value;
   const agente = document.getElementById('cot-agente').value;
-  const cant = Number(document.getElementById('cot-cant').value) || 1;
+  const cant = parseNumeroAR(document.getElementById('cot-cant').value) || 1;
   const obs = document.getElementById('cot-obs').value;
 
   let precioUnitario = 4500;
@@ -1456,7 +1477,9 @@ function openModal(tipo, index){
     if(c.type === 'select'){
       return '<div class="field"><label>' + c.label + '</label><select id="field-' + c.key + '">' + c.options.map(o=>'<option value="'+o.val+'" '+(val===o.val?'selected':'')+'>'+o.label+'</option>').join('') + '</select></div>';
     }
-    return '<div class="field"><label>' + c.label + '</label><input id="field-' + c.key + '" type="' + c.type + '" value="' + String(val).replace(/"/g,'&quot;') + '" required></div>';
+    const inputType = c.type === 'number' ? 'text' : c.type;
+    const inputMode = c.type === 'number' ? 'inputmode="decimal"' : '';
+    return '<div class="field"><label>' + c.label + '</label><input id="field-' + c.key + '" type="' + inputType + '" ' + inputMode + ' value="' + String(val).replace(/"/g,'&quot;') + '" required></div>';
   }).join('');
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -1485,7 +1508,7 @@ document.getElementById('modal-form').addEventListener('submit', async (e)=>{
   const nuevo = {};
   cfg.campos.forEach(c=>{
     const el = document.getElementById('field-' + c.key);
-    nuevo[c.key] = c.type === 'number' ? Number(el.value) : el.value;
+    nuevo[c.key] = c.type === 'number' ? parseNumeroAR(el.value) : el.value;
   });
   if(modalTipo === 'ideas' && modalIndex === null){
     nuevo.estado = 'pendiente'; nuevo.autor = currentUser ? currentUser.email.split('@')[0] : 'Usuario';
